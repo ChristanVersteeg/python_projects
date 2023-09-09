@@ -1,26 +1,18 @@
-import pyautogui as auto; auto.PAUSE = 0.2
+#classes, variables, keywords, if-for-return, methods, locals, structs, numbers
+##4dc9b0, #dcdcdc, #569cd6, #d8a0df, #dcdcaa, #9cdcfe, #86c691, #b5cea8
+
+import pyautogui as auto; auto.PAUSE = 0.1
 import keyboard
 from time import sleep
 
-             #classes, variables, keywords, if-for-return, methods, locals, structs, numbers
-             #0, 1, 2, 3, 4, 5, 6, 7
-#HEX_CODES = ['#4dc9b0', '#dcdcdc', '#569cd6', '#d8a0df', '#dcdcaa', '#9cdcfe', '#86c691', '#b5cea8']
-             #660, 305-687,297
+def execute_commands(count):
+    sleep(0.5)
+    auto.hotkey('alt', '5')
+    auto.press('down')
+    auto.press('right', count)
+    auto.press('enter')
 
-color = [1, 2, 3, 5 ,5 ,5 , 5, 5, 5, 5, 5]
-running = True
-
-def on_key_event(event):
-    if event.event_type == keyboard.KEY_DOWN and event.name == "s":
-        global running
-        running = False
-keyboard.on_press(on_key_event)
-
-sleep(2)
-for i in range(len(color)):
-    if(not running): break
-    auto.hotkey('shift', 'right')
-    auto.click(642, 176)
-    auto.click(662 + 26*color[i], 300)
-    auto.press('right')
-
+for i in range(1, 11):
+    keyboard.add_hotkey(f'ctrl+f{i}', lambda i=i: execute_commands(i-1))
+    
+keyboard.wait()
