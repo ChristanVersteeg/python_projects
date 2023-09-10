@@ -6,6 +6,7 @@ import keyboard
 from time import sleep
 import tkinter as tk
 from PIL import Image, ImageTk
+import re
 
 root = None
 tab_bar = True
@@ -24,7 +25,17 @@ def toggle_tab_bar(event):
     if event.name == 'esc': 
         global tab_bar
         root.overrideredirect(tab_bar)
+        
         tab_bar = not tab_bar
+        
+        x, y = re.findall(r'[+-]\d+',  root.geometry())
+        
+        if int(x) <= 0: return
+        
+        value = -10 if tab_bar else 10
+        x = ('+' if int(x) + value >= 0 else '') + str(int(x) + value)
+        
+        root.geometry(x + y)
 keyboard.on_press(toggle_tab_bar)
 
 def display_image():
@@ -33,6 +44,7 @@ def display_image():
     
     root.title("Map")
     root.attributes('-topmost', True)
+    root.resizable(False, False)
     
     img = Image.open("ColorMap.png")
 
