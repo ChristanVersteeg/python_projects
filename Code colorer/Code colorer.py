@@ -46,3 +46,5 @@ def display_image():
 
     root.mainloop()
 display_image()
+
+keyboard.wait()
