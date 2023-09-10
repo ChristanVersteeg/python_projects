@@ -1,5 +1,5 @@
-#classes, variables, keywords, if-for-return, methods, locals, structs, numbers
-##4dc9b0, #dcdcdc, #569cd6, #d8a0df, #dcdcaa, #9cdcfe, #86c691, #b5cea8
+#structs, variables, methods, classes, locals,  keywords, if/for,  comments, numbers, #line numbers        
+#9cdcfe,  #dcdcdc,   #dcdcaa, #4dc9b0, #86c691, #569cd6,  #d8a0df, #4F9E46,  #b5cea8, #848480              
 
 import pyautogui as auto; auto.PAUSE = 0.1
 import keyboard
