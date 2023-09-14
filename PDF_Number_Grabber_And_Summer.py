@@ -21,7 +21,6 @@ def sum_numbers_in_pdfs(folder_path):
     # Iterate over all files in the folder
     for filename in os.listdir(folder_path):
         if filename.endswith('.pdf'):
-            print(f"Processing {filename}...")
             pdf_path = os.path.join(folder_path, filename)
             
             with open(pdf_path, 'rb') as file:
@@ -29,10 +28,10 @@ def sum_numbers_in_pdfs(folder_path):
                 
                 # Iterate through all pages in the PDF
                 for page_num in range(len(reader.pages)):
-                    page = reader.pages[page_num]
-                    text = page.extract_text()
-                    print(extract_numbers_from_text(text))
-                    total_sum += extract_numbers_from_text(text)
+                    current_sum = (extract_numbers_from_text(reader.pages[page_num].extract_text()))
+                    total_sum += current_sum
+            print(f"Processed {filename}, Summation is: {current_sum}")
+                    
     
     return total_sum
 
