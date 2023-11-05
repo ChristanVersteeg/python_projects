@@ -2,7 +2,9 @@ import pytube
 import moviepy.editor as mp
 import os
 
-VIDEO_URL = "https://youtu.be/qIzerUh9F-8"
+VIDEO_URL = """
+https://youtu.be/Ol0j6XdkyZs
+"""
 
 output_file = "disc.ogg"
 
