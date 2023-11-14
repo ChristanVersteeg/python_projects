@@ -1,8 +1,20 @@
 import tkinter as tk
 import keyboard as key
+import os
 
 warn_window = None
-last_position = None  # Variable to store the last position
+position_file = "window_position.txt"  # File to store the position
+
+def save_position(position):
+    with open(position_file, "w") as file:
+        file.write(f"{position[0]},{position[1]}")
+
+def load_position():
+    if os.path.exists(position_file):
+        with open(position_file, "r") as file:
+            position = file.read().split(',')
+            return int(position[0]), int(position[1])
+    return None
 
 def make_label_window(text, position=None):
     window = tk.Toplevel()
@@ -11,7 +23,6 @@ def make_label_window(text, position=None):
     label = tk.Label(window, text=text, bg="lightgrey", borderwidth=2, relief="solid")
     label.pack()
 
-    # Set initial position if provided
     if position:
         window.geometry(f"+{position[0]}+{position[1]}")
 
@@ -37,13 +48,14 @@ def make_label_window(text, position=None):
     return window
 
 def toggle_window():
-    global warn_window, last_position
+    global warn_window
     if warn_window is None:
-        # Create the window with the last saved position
-        warn_window = make_label_window("PARROT DO NOT FORGET TO DISABLE/ENABLE YOUR PACE PINGS YOU UTTER BUFFOON", last_position)
+        # Load the position and create the window
+        position = load_position()
+        warn_window = make_label_window("PARROT DO NOT FORGET TO DISABLE/ENABLE YOUR PACE PINGS YOU UTTER BUFFOON", position)
     else:
-        # Save the current position before destroying
-        last_position = (warn_window.winfo_x(), warn_window.winfo_y())
+        # Save the position and destroy the window
+        save_position((warn_window.winfo_x(), warn_window.winfo_y()))
         warn_window.destroy()
         warn_window = None
 
