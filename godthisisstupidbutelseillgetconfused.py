@@ -1,13 +1,15 @@
 import tkinter as tk
+import keyboard as key
+
+warn_window = None
 
 def make_label_window(text):
     window = tk.Toplevel()
-    window.overrideredirect(True)  # Remove window decorations
-    window.attributes('-topmost', True)  # Keep window on top
+    window.overrideredirect(True)
+    window.attributes('-topmost', True)
     label = tk.Label(window, text=text, bg="lightgrey", borderwidth=2, relief="solid")
     label.pack()
 
-    # Dragging functionality
     def start_move(event):
         window.x = event.x
         window.y = event.y
@@ -29,11 +31,19 @@ def make_label_window(text):
 
     return window
 
-root = tk.Tk()
-root.withdraw()  # Hide the root window
+def toggle_window():
+    global warn_window
+    if warn_window is None:
+        # Create the window
+        warn_window = make_label_window("PARROT DO NOT FORGET TO DISABLE/ENABLE YOUR PACE PINGS YOU UTTER BUFFOON")
+    else:
+        # Destroy the window
+        warn_window.destroy()
+        warn_window = None
 
-# Create two draggable labels
-mono_window = make_label_window("MONO")
-dots_window = make_label_window("DOTS")
+key.add_hotkey('9', toggle_window)
+
+root = tk.Tk()
+root.withdraw()
 
 root.mainloop()
