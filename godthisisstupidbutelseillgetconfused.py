@@ -2,19 +2,22 @@ import tkinter as tk
 import keyboard as key
 import os
 
+position_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'window_position.txt')
+if not os.path.exists(os.path.dirname(position_file)): os.makedirs(os.path.dirname(position_file))
+if not os.path.exists(position_file):
+    with open(position_file, 'w') as file:
+        file.write("0,0")
+        
 warn_window = None
-position_file = "window_position.txt"  # File to store the position
 
 def save_position(position):
     with open(position_file, "w") as file:
         file.write(f"{position[0]},{position[1]}")
 
 def load_position():
-    if os.path.exists(position_file):
-        with open(position_file, "r") as file:
-            position = file.read().split(',')
-            return int(position[0]), int(position[1])
-    return None
+    with open(position_file, "r") as file:
+        position = file.read().split(',')
+        return int(position[0]), int(position[1])
 
 def make_label_window(text, position=None):
     window = tk.Toplevel()
