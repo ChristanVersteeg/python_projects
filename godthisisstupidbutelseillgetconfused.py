@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import font
 import keyboard as key
 import os
 
@@ -11,10 +12,17 @@ def load_position():
 position_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'window_position.txt')
 if not os.path.exists(os.path.dirname(position_file)): os.makedirs(os.path.dirname(position_file))
 if not os.path.exists(position_file): open(position_file, 'w').write("0,0")
-warn_window = None
-warn_text = "PARROT DO NOT FORGET TO DISABLE/ENABLE YOUR PACE PINGS YOU UTTER BUFFOON"
 position = load_position()
 old_position = position
+warn_window = None
+
+warn_text = "PARROT DO NOT FORGET TO DISABLE/ENABLE YOUR PACE PINGS YOU UTTER BUFFOON"
+bg_color = "#56fea6"
+font_size = 32
+border_size = 2
+relief_type = "solid"
+alpha = 1
+hotkey = '9'
 
 def create_tkinter_loop():
     root = tk.Tk()
@@ -26,7 +34,9 @@ def create_label():
     window.overrideredirect(True)
     window.attributes('-topmost', True)
     window.geometry(f"+{position[0]}+{position[1]}")
-    label = tk.Label(window, text=warn_text, bg="lightgrey", borderwidth=2, relief="solid")
+    window.attributes('-alpha', alpha) 
+    label_font = font.Font(size=font_size)
+    label = tk.Label(window, text=warn_text, bg=bg_color, borderwidth=border_size, relief=relief_type, font=label_font)
     label.pack()
     
     return window, label
@@ -68,6 +78,6 @@ def toggle_window():
             print("wrote to file")
             save_position(position)
             old_position = position
-key.add_hotkey('9', toggle_window)
+key.add_hotkey(hotkey, toggle_window)
 
 create_tkinter_loop()
