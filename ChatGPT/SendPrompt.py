@@ -8,6 +8,7 @@ import keyboard
 running = True
 def quit(_): global running; running = False
 keyboard.on_press_key('esc', quit)
+# Set up the ChromeDriver service
 
 auto.PAUSE = 0.01
 screenshot = None
