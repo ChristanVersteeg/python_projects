@@ -18,6 +18,7 @@ warn_window = None
 
 warn_text = "PARROT DO NOT FORGET TO DISABLE/ENABLE YOUR PACE PINGS YOU UTTER BUFFOON"
 bg_color = "#56fea6"
+text_color = "#ffffff"
 font_size = 32
 border_size = 2
 relief_type = "solid"
@@ -36,7 +37,7 @@ def create_label():
     window.geometry(f"+{position[0]}+{position[1]}")
     window.attributes('-alpha', alpha) 
     label_font = font.Font(size=font_size)
-    label = tk.Label(window, text=warn_text, bg=bg_color, borderwidth=border_size, relief=relief_type, font=label_font)
+    label = tk.Label(window, text=warn_text, bg=bg_color, fg=text_color, borderwidth=border_size, relief=relief_type, font=label_font)
     label.pack()
     
     return window, label
