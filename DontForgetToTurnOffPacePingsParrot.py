@@ -4,32 +4,60 @@ import json
 import os
 
 external_process = None
-script_path = ""
+json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
 
 def script_description():
-    return "A tool that creates a window with text upon a hotkey press. This window will always on top of everything. Made by Wumpie, for Parrot <3."
+    return "A tool that creates a window with text upon a hotkey press. This window will always be on top of everything. Made by Wumpie, for Parrot <3."
 
 def script_load(settings):
     global external_process
-    
-    json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
+
     if not os.path.exists(os.path.dirname(json_file)): os.makedirs(os.path.dirname(json_file))
     if not os.path.exists(json_file): open(json_file, 'w')
-    
+
     creation_flags = subprocess.CREATE_NO_WINDOW
-    external_process = subprocess.Popen(['python', script_path], creationflags=creation_flags)
+    external_process = subprocess.Popen(['python', obs.obs_data_get_string(settings, "script_path")], creationflags=creation_flags)
     print("External Python script started.")
-    
+
 def script_properties():
     props = obs.obs_properties_create()
-    
+
     obs.obs_properties_add_path(props, "script_path", "Python Script Path", obs.OBS_PATH_FILE, "Python (*.py)", '')
+    obs.obs_properties_add_text(props, "warn_text", "Warning Text", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_int(props, "font_size", "Font Size", 1, 100, 1)
+    obs.obs_properties_add_color(props, "bg_color", "Background Color")
+    obs.obs_properties_add_int(props, "border_size", "Border Size", 0, 10, 1)
+    obs.obs_properties_add_list(props, "relief_type", "Relief Type", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    obs.obs_properties_add_float_slider(props, "alpha", "Alpha", 0.0, 1.0, 0.01)
+    obs.obs_properties_add_text(props, "hotkey", "Hotkey", obs.OBS_TEXT_DEFAULT)
+
+    relief_property = obs.obs_properties_get(props, "relief_type")
+    obs.obs_property_list_add_string(relief_property, "Flat", "flat")
+    obs.obs_property_list_add_string(relief_property, "Ridge", "ridge")
+    obs.obs_property_list_add_string(relief_property, "Solid", "solid")
+    obs.obs_property_list_add_string(relief_property, "Sunken", "sunken")
+    obs.obs_property_list_add_string(relief_property, "Raised", "raised")
+    obs.obs_property_list_add_string(relief_property, "Groove", "groove")
+
     return props
 
 def script_update(settings):
-    json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
+    global settings_data
+
+    settings_data = {
+        "script_path": obs.obs_data_get_string(settings, "script_path"),
+        "warn_text": obs.obs_data_get_string(settings, "warn_text"),
+        "bg_color": obs.obs_data_get_int(settings, "bg_color"),
+        "font_size": obs.obs_data_get_int(settings, "font_size"),
+        "border_size": obs.obs_data_get_int(settings, "border_size"),
+        "relief_type": obs.obs_data_get_string(settings, "relief_type"),
+        "alpha": obs.obs_data_get_double(settings, "alpha"),
+        "hotkey": obs.obs_data_get_string(settings, "hotkey")
+    }
+
+    # Serialize to JSON
     with open(json_file, 'w') as file:
-        json.dump({"script_path": script_path}, file)
+        json.dump(settings_data, file)
 
 def script_unload():
     global external_process
