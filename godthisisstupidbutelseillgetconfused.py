@@ -11,12 +11,11 @@ def load_position():
     return list(map(int, open(position_file, "r").read().split(',')))
 
 json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
-
 with open(json_file, 'r') as file:
     settings = json.load(file)
     warn_text = settings['warn_text']
-    bg_color = settings['bg_color']
     fg_color = settings['fg_color']
+    bg_color = settings['bg_color']
     font_size = settings['font_size']
     border_size = settings['border_size']
     relief_type = settings['relief_type']

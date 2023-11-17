@@ -38,6 +38,7 @@ def script_properties():
     misc_group = obs.obs_properties_create()
     obs.obs_properties_add_float_slider(misc_group, "alpha", "Alpha", 0.0, 1.0, 0.01)
     obs.obs_properties_add_text(misc_group, "hotkey", "Hotkey", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_font(misc_group, "font", "Font (WIP, defect)")
     obs.obs_properties_add_group(props, "miscellaneous_group", "Miscellaneous Settings", obs.OBS_GROUP_NORMAL, misc_group)
     
 
@@ -53,11 +54,17 @@ def script_properties():
 
 def script_update(settings):
 
+    def integer_to_hex_color(integer):
+        blue = (integer >> 16) & 0xFF  
+        green = (integer >> 8) & 0xFF  
+        red = integer & 0xFF      
+
+        return "#{:02x}{:02x}{:02x}".format(red, green, blue)
+
     settings_data = {
-        "script_path": obs.obs_data_get_string(settings, "script_path"),
         "warn_text": obs.obs_data_get_string(settings, "warn_text"),
-        "fg_color": obs.obs_data_get_int(settings, "fg_color"),
-        "bg_color": obs.obs_data_get_int(settings, "bg_color"),
+        "fg_color": integer_to_hex_color(obs.obs_data_get_int(settings, 'fg_color')),
+        "bg_color": integer_to_hex_color(obs.obs_data_get_int(settings, 'bg_color')),
         "font_size": obs.obs_data_get_int(settings, "font_size"),
         "border_size": obs.obs_data_get_int(settings, "border_size"),
         "relief_type": obs.obs_data_get_string(settings, "relief_type"),
