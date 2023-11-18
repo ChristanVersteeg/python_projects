@@ -4,7 +4,7 @@ import json
 import os
 
 external_process = None
-json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
+json_file = os.path.join(os.environ['LOCALAPPDATA'], 'OBSKeyTriggeredTextOverlay', 'label_settings.json')
 
 def run_script(run, settings = None):
     global external_process
@@ -18,7 +18,7 @@ def run_script(run, settings = None):
         print("External Python script terminated.")
 
 def script_description():
-    return "A tool that creates a window with text upon a hotkey press. This window will always be on top of everything. Made by Wumpie, for Parrot <3."
+    return "A tool that creates a window with text upon a hotkey press.\nThis window will always be on top of everything.\nMade by Wumpie."
 
 def script_load(settings):
 

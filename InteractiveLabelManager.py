@@ -10,7 +10,10 @@ def save_position(position):
 def load_position():
     return list(map(int, open(position_file, "r").read().split(',')))
 
-json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
+def file_to_app_data_path(file):
+   return os.path.join(os.environ['LOCALAPPDATA'], 'OBSKeyTriggeredTextOverlay', file)
+
+json_file = file_to_app_data_path('label_settings.json')
 with open(json_file, 'r') as file:
     settings = json.load(file)
     text = settings['text']
@@ -27,7 +30,7 @@ with open(json_file, 'r') as file:
     alpha = settings['alpha']
     hotkey = settings['hotkey']
 
-position_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'window_position.txt')
+position_file = file_to_app_data_path('window_position.txt')
 if not os.path.exists(os.path.dirname(position_file)): os.makedirs(os.path.dirname(position_file))
 if not os.path.exists(position_file): open(position_file, 'w').write("0,0")
 position = load_position()
