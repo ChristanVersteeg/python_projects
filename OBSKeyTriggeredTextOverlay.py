@@ -30,23 +30,26 @@ def script_load(settings):
 def script_properties():
     props = obs.obs_properties_create()
 
+    execution_group = obs.obs_properties_create()
+    obs.obs_properties_add_path(execution_group, "script_path", "Python Script Path", obs.OBS_PATH_FILE, "Python (*.py)", '')
+    obs.obs_properties_add_list(execution_group, "hotkey", "Hotkey", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    obs.obs_properties_add_group(props, "execution_group", "Execution", obs.OBS_GROUP_NORMAL, execution_group)
+
     fg_group = obs.obs_properties_create()
-    obs.obs_properties_add_path(fg_group, "script_path", "Python Script Path", obs.OBS_PATH_FILE, "Python (*.py)", '')
     obs.obs_properties_add_text(fg_group, "text", "Text", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_font(fg_group, "font", "Font")
     obs.obs_properties_add_color(fg_group, "fg_color", "Text Color")
-    obs.obs_properties_add_group(props, "foreground_group", "Foreground Settings", obs.OBS_GROUP_NORMAL, fg_group)
+    obs.obs_properties_add_group(props, "foreground_group", "Foreground", obs.OBS_GROUP_NORMAL, fg_group)
      
     bg_group = obs.obs_properties_create()
     obs.obs_properties_add_color(bg_group, "bg_color", "Background Color")
-    obs.obs_properties_add_int(bg_group, "border_size", "Border Size", 0, 10, 1)
+    obs.obs_properties_add_int(bg_group, "border_size", "Border Size", 0, 100, 1)
     obs.obs_properties_add_list(bg_group, "relief_type", "Relief Type", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
-    obs.obs_properties_add_group(props, "background_group", "Background Settings", obs.OBS_GROUP_NORMAL, bg_group)
+    obs.obs_properties_add_group(props, "background_group", "Background", obs.OBS_GROUP_NORMAL, bg_group)
     
     misc_group = obs.obs_properties_create()
-    obs.obs_properties_add_float_slider(misc_group, "alpha", "Alpha", 0.0, 1.0, 0.01)
-    obs.obs_properties_add_list(misc_group, "hotkey", "Hotkey", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
-    obs.obs_properties_add_group(props, "miscellaneous_group", "Miscellaneous Settings", obs.OBS_GROUP_NORMAL, misc_group)
+    obs.obs_properties_add_float_slider(misc_group, "alpha", "Alpha", 0, 1.0, 0.01)
+    obs.obs_properties_add_group(props, "miscellaneous_group", "Miscellaneous", obs.OBS_GROUP_NORMAL, misc_group)
     
     
     def add_prop_to_list(prop, list):
