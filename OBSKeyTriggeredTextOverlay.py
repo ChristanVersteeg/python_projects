@@ -81,23 +81,23 @@ def script_update(settings):
 
 
     font_data = obs.obs_data_get_obj(settings, "font")
-    font_style = obs.obs_data_get_string(font_data, "style")
+    font_flags = obs.obs_data_get_int(font_data, "flags")
     
-    def if_matches_return(matches, returns, default):
-        if any(word in font_style.lower() for word in matches):
-            returns = returns
-        else: returns = default
-
-        return returns
-    
+    def if_flag_bit_value_return(bit_value, return_value = 1, default = 0):
+        if font_flags & bit_value:
+            return return_value
+        else: return default
+            
     settings_data = {
         "text": obs.obs_data_get_string(settings, "text"),
         "fg_color": integer_to_hex_color(obs.obs_data_get_int(settings, 'fg_color')),
         "bg_color": integer_to_hex_color(obs.obs_data_get_int(settings, 'bg_color')),
         "font_size": obs.obs_data_get_int(font_data, "size"),
         'font_family': obs.obs_data_get_string(font_data, "face"),
-        'font_weight': if_matches_return(["bold", "vet"], "bold", "normal"),
-        'font_slant': if_matches_return(["italic", "schuin", "cursief"], "italic", "roman"),
+        'font_weight': if_flag_bit_value_return(1, "bold", "normal"),
+        'font_slant': if_flag_bit_value_return(2, "italic", "roman"),
+        'font_overstrike': if_flag_bit_value_return(8),
+        'font_underline': if_flag_bit_value_return(4),
         "border_size": obs.obs_data_get_int(settings, "border_size"),
         "relief_type": obs.obs_data_get_string(settings, "relief_type"),
         "alpha": obs.obs_data_get_double(settings, "alpha"),
@@ -106,15 +106,6 @@ def script_update(settings):
 
     with open(json_file, 'w') as file:
         json.dump(settings_data, file)
-    
-    
-    if font_data:
-        face = obs.obs_data_get_string(font_data, "face")
-        font_style = obs.obs_data_get_string(font_data, "style")
-        size = obs.obs_data_get_int(font_data, "size")
-        flags = obs.obs_data_get_int(font_data, "flags") 
-
-        obs.obs_data_release(font_data)
 
 def script_unload():
     run_script(False)

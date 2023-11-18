@@ -20,6 +20,8 @@ with open(json_file, 'r') as file:
     font_family = settings['font_family']
     font_weight = settings['font_weight']
     font_slant = settings['font_slant']
+    font_overstrike = settings['font_overstrike']
+    font_underline = settings['font_underline']
     border_size = settings['border_size']
     relief_type = settings['relief_type']
     alpha = settings['alpha']
@@ -43,7 +45,7 @@ def create_label():
     window.attributes('-topmost', True)
     window.geometry(f"+{position[0]}+{position[1]}")
     window.attributes('-alpha', alpha)
-    label_font = font.Font(family=font_family, size=font_size, weight=font_weight, slant=font_slant, underline=0, overstrike=0)
+    label_font = font.Font(family=font_family, size=font_size, weight=font_weight, slant=font_slant, overstrike=font_overstrike, underline=font_underline)
     label = tk.Label(window, text=text, bg=bg_color, fg=fg_color, borderwidth=border_size, relief=relief_type, font=label_font)
     label.pack()
     
