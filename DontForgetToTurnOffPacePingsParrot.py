@@ -6,18 +6,26 @@ import os
 external_process = None
 json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
 
+def run_script(run, settings = None):
+    global external_process
+    if run:
+        creation_flags = subprocess.CREATE_NO_WINDOW
+        external_process = subprocess.Popen(['python', obs.obs_data_get_string(settings, "script_path")], creationflags=creation_flags)
+        print("External Python script started.")
+    elif external_process:
+        external_process.terminate()
+        external_process = None
+        print("External Python script terminated.")
+
 def script_description():
     return "A tool that creates a window with text upon a hotkey press. This window will always be on top of everything. Made by Wumpie, for Parrot <3."
 
 def script_load(settings):
-    global external_process
 
     if not os.path.exists(os.path.dirname(json_file)): os.makedirs(os.path.dirname(json_file))
     if not os.path.exists(json_file): open(json_file, 'w')
-
-    creation_flags = subprocess.CREATE_NO_WINDOW
-    external_process = subprocess.Popen(['python', obs.obs_data_get_string(settings, "script_path")], creationflags=creation_flags)
-    print("External Python script started.")
+    
+    run_script(True, settings)
 
 def script_properties():
     props = obs.obs_properties_create()
@@ -85,10 +93,12 @@ def script_update(settings):
 
     with open(json_file, 'w') as file:
         json.dump(settings_data, file)
+        
+    run_script(False)
+    run_script(True, settings)
 
 def script_unload():
     global external_process
-    if external_process:
-        external_process.terminate()
-        external_process = None
-        print("External Python script terminated.")
+
+    run_script(False)
+    
