@@ -42,9 +42,9 @@ def script_properties():
     obs.obs_properties_add_group(props, "foreground_group", "Foreground", obs.OBS_GROUP_NORMAL, fg_group)
      
     bg_group = obs.obs_properties_create()
-    obs.obs_properties_add_color(bg_group, "bg_color", "Background Color")
     obs.obs_properties_add_int(bg_group, "border_size", "Border Size", 0, 100, 1)
     obs.obs_properties_add_list(bg_group, "relief_type", "Relief Type", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
+    obs.obs_properties_add_color(bg_group, "bg_color", "Background Color")
     obs.obs_properties_add_group(props, "background_group", "Background", obs.OBS_GROUP_NORMAL, bg_group)
     
     misc_group = obs.obs_properties_create()
