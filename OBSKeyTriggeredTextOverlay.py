@@ -32,9 +32,9 @@ def script_properties():
 
     fg_group = obs.obs_properties_create()
     obs.obs_properties_add_path(fg_group, "script_path", "Python Script Path", obs.OBS_PATH_FILE, "Python (*.py)", '')
-    obs.obs_properties_add_text(fg_group, "warn_text", "Warning Text", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_text(fg_group, "text", "Text", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_font(fg_group, "font", "Font")
     obs.obs_properties_add_color(fg_group, "fg_color", "Text Color")
-    obs.obs_properties_add_int(fg_group, "font_size", "Font Size", 1, 100, 1)
     obs.obs_properties_add_group(props, "foreground_group", "Foreground Settings", obs.OBS_GROUP_NORMAL, fg_group)
      
     bg_group = obs.obs_properties_create()
@@ -46,7 +46,6 @@ def script_properties():
     misc_group = obs.obs_properties_create()
     obs.obs_properties_add_float_slider(misc_group, "alpha", "Alpha", 0.0, 1.0, 0.01)
     obs.obs_properties_add_list(misc_group, "hotkey", "Hotkey", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
-    obs.obs_properties_add_font(misc_group, "font", "Font (WIP, defect)")
     obs.obs_properties_add_group(props, "miscellaneous_group", "Miscellaneous Settings", obs.OBS_GROUP_NORMAL, misc_group)
     
     
@@ -80,11 +79,25 @@ def script_update(settings):
 
         return "#{:02x}{:02x}{:02x}".format(red, green, blue)
 
+
+    font_data = obs.obs_data_get_obj(settings, "font")
+    font_style = obs.obs_data_get_string(font_data, "style")
+    
+    def if_matches_return(matches, returns, default):
+        if any(word in font_style.lower() for word in matches):
+            returns = returns
+        else: returns = default
+
+        return returns
+    
     settings_data = {
-        "warn_text": obs.obs_data_get_string(settings, "warn_text"),
+        "text": obs.obs_data_get_string(settings, "text"),
         "fg_color": integer_to_hex_color(obs.obs_data_get_int(settings, 'fg_color')),
         "bg_color": integer_to_hex_color(obs.obs_data_get_int(settings, 'bg_color')),
-        "font_size": obs.obs_data_get_int(settings, "font_size"),
+        "font_size": obs.obs_data_get_int(font_data, "size"),
+        'font_family': obs.obs_data_get_string(font_data, "face"),
+        'font_weight': if_matches_return(["bold", "vet"], "bold", "normal"),
+        'font_slant': if_matches_return(["italic", "schuin", "cursief"], "italic", "roman"),
         "border_size": obs.obs_data_get_int(settings, "border_size"),
         "relief_type": obs.obs_data_get_string(settings, "relief_type"),
         "alpha": obs.obs_data_get_double(settings, "alpha"),
@@ -93,12 +106,15 @@ def script_update(settings):
 
     with open(json_file, 'w') as file:
         json.dump(settings_data, file)
-        
-    run_script(False)
-    run_script(True, settings)
+    
+    
+    if font_data:
+        face = obs.obs_data_get_string(font_data, "face")
+        font_style = obs.obs_data_get_string(font_data, "style")
+        size = obs.obs_data_get_int(font_data, "size")
+        flags = obs.obs_data_get_int(font_data, "flags") 
+
+        obs.obs_data_release(font_data)
 
 def script_unload():
-    global external_process
-
     run_script(False)
-    

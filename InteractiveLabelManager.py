@@ -13,10 +13,13 @@ def load_position():
 json_file = os.path.join(os.environ['LOCALAPPDATA'], 'DontForgetToTurnOffPacePingsParrot', 'label_settings.json')
 with open(json_file, 'r') as file:
     settings = json.load(file)
-    warn_text = settings['warn_text']
+    text = settings['text']
     fg_color = settings['fg_color']
     bg_color = settings['bg_color']
     font_size = settings['font_size']
+    font_family = settings['font_family']
+    font_weight = settings['font_weight']
+    font_slant = settings['font_slant']
     border_size = settings['border_size']
     relief_type = settings['relief_type']
     alpha = settings['alpha']
@@ -39,9 +42,9 @@ def create_label():
     window.overrideredirect(True)
     window.attributes('-topmost', True)
     window.geometry(f"+{position[0]}+{position[1]}")
-    window.attributes('-alpha', alpha) 
-    label_font = font.Font(size=font_size)
-    label = tk.Label(window, text=warn_text, bg=bg_color, fg=fg_color, borderwidth=border_size, relief=relief_type, font=label_font)
+    window.attributes('-alpha', alpha)
+    label_font = font.Font(family=font_family, size=font_size, weight=font_weight, slant=font_slant, underline=0, overstrike=0)
+    label = tk.Label(window, text=text, bg=bg_color, fg=fg_color, borderwidth=border_size, relief=relief_type, font=label_font)
     label.pack()
     
     return window, label
@@ -80,7 +83,6 @@ def toggle_window():
         warn_window = None
         if(old_position is not position):
             print(old_position, position)
-            print("wrote to file")
             save_position(position)
             old_position = position
 key.add_hotkey(hotkey, toggle_window)
