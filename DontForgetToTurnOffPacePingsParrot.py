@@ -37,19 +37,30 @@ def script_properties():
     
     misc_group = obs.obs_properties_create()
     obs.obs_properties_add_float_slider(misc_group, "alpha", "Alpha", 0.0, 1.0, 0.01)
-    obs.obs_properties_add_text(misc_group, "hotkey", "Hotkey", obs.OBS_TEXT_DEFAULT)
+    obs.obs_properties_add_list(misc_group, "hotkey", "Hotkey", obs.OBS_COMBO_TYPE_LIST, obs.OBS_COMBO_FORMAT_STRING)
     obs.obs_properties_add_font(misc_group, "font", "Font (WIP, defect)")
     obs.obs_properties_add_group(props, "miscellaneous_group", "Miscellaneous Settings", obs.OBS_GROUP_NORMAL, misc_group)
     
-
+    
+    def add_prop_to_list(prop, list):
+        for item in list:
+            item_display = item.capitalize()
+            obs.obs_property_list_add_string(prop, item_display, item)
+        
+    reliefs = ["flat", "ridge", "solid", "sunken", "raised", "groove"]
     relief_property = obs.obs_properties_get(props, "relief_type")
-    obs.obs_property_list_add_string(relief_property, "Flat", "flat")
-    obs.obs_property_list_add_string(relief_property, "Ridge", "ridge")
-    obs.obs_property_list_add_string(relief_property, "Solid", "solid")
-    obs.obs_property_list_add_string(relief_property, "Sunken", "sunken")
-    obs.obs_property_list_add_string(relief_property, "Raised", "raised")
-    obs.obs_property_list_add_string(relief_property, "Groove", "groove")
+    add_prop_to_list(relief_property, reliefs)
 
+    keys = [
+        "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
+        "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=",
+        "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]",
+        "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'",
+        "z", "x", "c", "v", "b", "n", "m", ",", ".", "/"
+    ]
+    hotkey_property = obs.obs_properties_get(props, "hotkey")
+    add_prop_to_list(hotkey_property, keys)
+    
     return props
 
 def script_update(settings):
