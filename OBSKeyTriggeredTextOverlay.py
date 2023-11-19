@@ -11,11 +11,9 @@ def run_script(run, settings = None):
     if run:
         creation_flags = subprocess.CREATE_NO_WINDOW
         external_process = subprocess.Popen(['python', obs.obs_data_get_string(settings, "script_path")], creationflags=creation_flags)
-        print("External Python script started.")
     elif external_process:
         external_process.terminate()
         external_process = None
-        print("External Python script terminated.")
 
 def script_description():
     return "A tool that creates a window with text upon a hotkey press.\nThis window will always be on top of everything.\nMade by Wumpie."
@@ -27,6 +25,25 @@ def script_load(settings):
     
     run_script(True, settings)
 
+def script_defaults(settings):
+    obs.obs_data_set_default_string(settings, "hotkey", "9")
+    
+    
+    obs.obs_data_set_default_string(settings, "text",  "Lorem ipsum dolor sit amet consectetur adipisicing elit.")
+    
+    font_settings = obs.obs_data_create()
+    obs.obs_data_set_string(font_settings, "face", "Calibri") 
+    obs.obs_data_set_int(font_settings, "size", 11) 
+    obs.obs_data_set_default_obj(settings, "font", font_settings)
+    
+    obs.obs_data_set_default_int(settings, "fg_color", 16777215)
+    
+    
+    obs.obs_data_set_default_int(settings, "border_size", 2)
+    obs.obs_data_set_default_string(settings, "relief_type", "solid")
+    obs.obs_data_set_default_int(settings, "bg_color", 2104348)
+    obs.obs_data_set_default_double(settings, "alpha", 1)
+    
 def script_properties():
     props = obs.obs_properties_create()
 
@@ -57,7 +74,7 @@ def script_properties():
             item_display = item.capitalize()
             obs.obs_property_list_add_string(prop, item_display, item)
         
-    reliefs = ["flat", "ridge", "solid", "sunken", "raised", "groove"]
+    reliefs = ["flat", "solid", "ridge", "raised", "sunken", "groove"]
     relief_property = obs.obs_properties_get(props, "relief_type")
     add_prop_to_list(relief_property, reliefs)
 
@@ -74,7 +91,9 @@ def script_properties():
     return props
 
 def script_update(settings):
-
+    font_data = obs.obs_data_get_obj(settings, "font")
+    font_flags = obs.obs_data_get_int(font_data, "flags")
+    
     def integer_to_hex_color(integer):
         blue = (integer >> 16) & 0xFF  
         green = (integer >> 8) & 0xFF  
@@ -82,10 +101,6 @@ def script_update(settings):
 
         return "#{:02x}{:02x}{:02x}".format(red, green, blue)
 
-
-    font_data = obs.obs_data_get_obj(settings, "font")
-    font_flags = obs.obs_data_get_int(font_data, "flags")
-    
     def if_flag_bit_value_return(bit_value, return_value = 1, default = 0):
         if font_flags & bit_value:
             return return_value
