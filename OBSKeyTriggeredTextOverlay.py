@@ -26,6 +26,9 @@ def script_load(settings):
     run_script(True, settings)
 
 def script_defaults(settings):
+    file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "InteractiveLabelManager.py")
+    if not os.path.exists(file): file = None
+    obs.obs_data_set_default_string(settings, "script_path", file)
     obs.obs_data_set_default_string(settings, "hotkey", "9")
     
     
