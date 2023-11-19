@@ -11,7 +11,7 @@ def load_position():
     return list(map(int, open(position_file, "r").read().split(',')))
 
 def file_to_app_data_path(file):
-   return os.path.join(os.environ['LOCALAPPDATA'], 'OBSKeyTriggeredTextOverlay', file)
+   return os.path.join(os.environ['LOCALAPPDATA'], 'OBSKeyTriggeredTextOverlayConfig', file)
 
 json_file = file_to_app_data_path('label_settings.json')
 with open(json_file, 'r') as file:
@@ -29,6 +29,7 @@ with open(json_file, 'r') as file:
     relief_type = settings['relief_type']
     alpha = settings['alpha']
     hotkey = settings['hotkey']
+    window_name = settings['window_name']
 
 position_file = file_to_app_data_path('window_position.txt')
 if not os.path.exists(os.path.dirname(position_file)): os.makedirs(os.path.dirname(position_file))
@@ -44,6 +45,7 @@ def create_tkinter_loop():
 
 def create_label():
     window = tk.Toplevel()
+    window.title(window_name)
     window.overrideredirect(True)
     window.attributes('-topmost', True)
     window.geometry(f"+{position[0]}+{position[1]}")

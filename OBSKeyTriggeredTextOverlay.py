@@ -4,7 +4,7 @@ import json
 import os
 
 external_process = None
-json_file = os.path.join(os.environ['LOCALAPPDATA'], 'OBSKeyTriggeredTextOverlay', 'label_settings.json')
+json_file = os.path.join(os.environ['LOCALAPPDATA'], 'OBSKeyTriggeredTextOverlayConfig', 'label_settings.json')
 
 def run_script(run, settings = None):
     global external_process
@@ -45,7 +45,10 @@ def script_defaults(settings):
     obs.obs_data_set_default_int(settings, "border_size", 2)
     obs.obs_data_set_default_string(settings, "relief_type", "solid")
     obs.obs_data_set_default_int(settings, "bg_color", 2104348)
+    
+    
     obs.obs_data_set_default_double(settings, "alpha", 1)
+    obs.obs_data_set_default_string(settings, "window_name", "Label")
     
 def script_properties():
     props = obs.obs_properties_create()
@@ -69,6 +72,7 @@ def script_properties():
     
     misc_group = obs.obs_properties_create()
     obs.obs_properties_add_float_slider(misc_group, "alpha", "Alpha", 0, 1.0, 0.01)
+    obs.obs_properties_add_text(misc_group, "window_name", "Window Name", obs.OBS_TEXT_DEFAULT)
     obs.obs_properties_add_group(props, "miscellaneous_group", "Miscellaneous", obs.OBS_GROUP_NORMAL, misc_group)
     
     
@@ -122,7 +126,8 @@ def script_update(settings):
         "border_size": obs.obs_data_get_int(settings, "border_size"),
         "relief_type": obs.obs_data_get_string(settings, "relief_type"),
         "alpha": obs.obs_data_get_double(settings, "alpha"),
-        "hotkey": obs.obs_data_get_string(settings, "hotkey")
+        "hotkey": obs.obs_data_get_string(settings, "hotkey"),
+        "window_name" : obs.obs_data_get_string(settings, "window_name")
     }
 
     with open(json_file, 'w') as file:
