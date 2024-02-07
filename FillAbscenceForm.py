@@ -102,7 +102,7 @@ chrome_options.add_argument("--window-size=500,1000")
 chrome_options.add_argument("--window-position=0,0")
 chrome_options.add_argument("--disable-extensions")
 chrome = webdriver.Chrome(options=chrome_options)
-chrome.get("https://fd8.formdesk.com/montessorilyceumamsterdam/verzuim-versie-maart2017")
+chrome.get("https://web.archive.org/web/20170710014840/https://fd8.formdesk.com/montessorilyceumamsterdam/verzuim-versie-maart2017")
 
 def fill_field(field, presses=1):
     auto.write(config[field.value]) if field != Field.DATE else auto.write(field.value)
