@@ -98,7 +98,7 @@ else:
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--new-tab")
-chrome_options.add_argument("--window-size=500,1000")
+chrome_options.add_argument("--window-size=500,1125")
 chrome_options.add_argument("--window-position=0,0")
 chrome_options.add_argument("--disable-extensions")
 chrome = webdriver.Chrome(options=chrome_options)
