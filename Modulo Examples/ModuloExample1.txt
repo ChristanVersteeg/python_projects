@@ -1,0 +1,144 @@
+FIRST YEAR OF TRAINING — Full Course (31 LESSONS + GRADUATION LESSON)
+
+Number of lessons (academic hours)
+TOPICS 
+
+
+KEY EDUCATIONAL RESULTS
+ARTIFACTS 
+Module 1. Language basics
+4 (8)
+Getting started with Python. Input-output functions.
+Variables. Numeric data types.
+Strings.
+Nested constructs.
+Hard Skills:
+Knows the basic rules of Python syntax and has an understanding of the code formatting standard.
+Knows the syntax of print(), input(), int(), str() functions.
+Requests data and prints it out.
+Applies integer and string data types in problem solving. Switches from one data type to another.
+Performs actions with strings: sum of strings, repeating a string n times, calculating a string length, getting a string character by number, replacing a substring with another substring, dividing a string by separator.
+Understands how variables’ values change when using the assignment operator.
+Soft Skills:
+Adheres to the plan created by the teacher.
+When an error occurs, first tries to cope with it independently and then asks for help.
+Attempts to analyze their bugs and prevent them in the future.
+Learning materials for the entire module on the platform.
+Plot employment contract to accept the position of a junior developer.
+Module 2. Control structures
+5 (10)
+Logical data type. Conditional operator.
+Nested conditional operator and conditional operator with multiple branches.
+Loop: while. Counter loop.
+Nested algorithmic constructions (loop to loop, conditional operator to loop, etc.).
+Hard Skills:
+Reads flowcharts and recognizes algorithmic structures.
+Knows the syntax of basic algorithmic constructions: conditional operator and loops while and for.
+Applies the logical data type when programming logical expressions.
+Solves problems using conditional operators and loops.
+Combines conditional statements and loops, including the use of nested constructions.
+Tries to choose the best and easiest solution from the available constructions.
+Soft Skills:
+Adheres to the plan created by the teacher.
+Understands that only a properly worded question can result in assistance.
+Participates in discussions. Attempts to prove their point of view.
+Checks their results against the specified criteria.
+Learning materials for the entire module on the platform.
+Diploma of participation in the ProTeam Programming Hackathon.
+Module 3. Functions and modules
+4 (8)
+Creating functions. Local and global scopes.
+Using one function within another.
+Modules. Using the built-in modules of the standard library.
+Creating modules. Connecting multiple modules.
+Hard Skills:
+Creates functions independently using the def operator;
+Solves problems using functions, including calling one function within another.
+Understands the difference between the scope of a function and the scope of a program.
+Solves problems using global variables.
+Uses the built-in modules of the standard Python library.
+Creates modules independently and uses them to solve problems.
+Soft Skills:
+Adheres to the plan created by the teacher
+Participates in discussions. Explains their point of view.
+Checks their results against the specified criteria.
+Learning materials for the entire module on the platform.
+Independent development product in the form of a software module.
+Module 4. Turtle module. Maths for the developer.
+4 (8)
+Turtle graphical module. The mathematics of the executor movement.
+Conditional operator. Drawing simple geometric shapes.
+Loop. Drawing polygons.
+Project lesson.
+Hard Skills:
+Explains what an executor is using their own words. Describes the turtle as an example of an executor.
+Identifies dependencies between the turtle’s movement and its units of measure (pixels, degrees).
+Defines coordinates as the address of a point in space. Determines the beginning of the turtle’s movement (the beginning of the countdown) on the screen.
+Solves problems of drawing different geometric shapes with the turtle.
+Adjusts the executor’s color, pen thickness, and performs color fills.
+Soft Skills:
+Adheres to the plan created by the teacher.
+Participates in discussions. Explains their point of view.
+Checks their results against the specified criteria.
+Learning materials for the entire module on the platform.
+Creative graphic project.
+Module 5. Object-oriented programming
+6 (12)
+Objects, their fields, and methods.
+Mouse and keyboard event handling.
+Classes. Class constructor
+Inheritance (from ready-made or own class).
+Hard Skills:
+Knows what an object, property, method, class, child class is. Understands the relationship of object-class concepts.
+Solves problems using multiple turtle objects.
+Solves problems to create their own class using the constructor.
+Solves problems to create a child class.
+Understands that every object in OOP carries some set of data and methods (encapsulation).
+Uses and supplements the properties and methods of one class in another class (inheritance).
+Soft Skills:
+Participates in discussions. Explains their point of view.
+Attempts to overcome obstacles on their own (e. g. uses tips or checklists).
+Chooses a task that is adequate to their level of knowledge.
+Learning materials for the entire module on the platform.
+Interactive platform game.
+An application to the labor contract for transferring to the developer position.
+Module 6. Basics of game development using the PyGame
+8 (16)
+Basics of game development. Sprite, game loop.
+Lists and methods of handling them. Going through the list in the for loop.
+Processing in-game events.
+Game physics.
+Hard Skills:
+Uses their own words to explain the meaning of a sprite, game cycle.
+Lists the processes that take place in each game cycle (event processing, game update, drawing, timing).
+Creates different types of sprites (geometric figure, text, image).
+Solves problems using the objects “screen”, “timer”.
+Handles mouse and keyboard events and in-game events.
+Uses built-in physics simulation to solve problems.
+Goes through the list using the for loop.
+Organizes the storage of a set of data (sprites) in a list.
+Uses OOP tools to create their own classes and descendant classes of ready-made PyGame solutions.
+Soft Skills:
+Uses their own words to explain what a checklist and a mind map are.
+Lists the stages of the project.
+Works on a project based on the project work algorithm given by the teacher.
+Tests their own/other’s project according to the teacher’s test data.
+Presents the project according to their own plan taking into account external constraints (e. g. time).
+Learning materials for the entire module on the platform.
+Diploma of participation in the ProTeam Hackathon.
+Games created from scratch: “Labyrinth”, “Electric Circuit”, “Synthesizer”, etc.
+Final Day
+1 (2)
+1. Summing up and refreshing the learned topics while playing.
+Hard Skills:
+Knows how to solve test tasks for key topics, attributes and use cases learned in Modules 1–5.
+Knows how to solve debugging and programming tasks similar to those explained in Modules 1–5.
+Combine their knowledge of various topics when solving the tasks.
+Attempts to find the best possible solution within a limited time frame.
+Soft Skills:
+Knows how to work individually and with another student.
+Knows how to present their project individually and with other students according to the plan suggested by the teacher.
+Knows how to assess their team’s needs and participates in the allocation of available resources
+Certificate of completion of the first study year.
+A souvenir branded with the logo of Algorithmics.
+
