@@ -1,26 +1,22 @@
-import keyboard
+import obspython as obs
 
-index = 0
+source_name = "display"  
+file_path = "C:/Users/Christan/Desktop/python_projects/display.txt" 
+check_interval_ms = 100
 
-trigger_key = 'space'
+def update_text_source():
+    with open(file_path, 'r') as file:
+        file_contents = file.read()
+            
+    source = obs.obs_get_source_by_name(source_name)
+    settings = obs.obs_data_create()
+    obs.obs_data_set_string(settings, "text", file_contents)
+    obs.obs_source_update(source, settings)
+    obs.obs_data_release(settings)
+    obs.obs_source_release(source)
 
-text_file = 'display.txt' 
+def script_load(settings):
+    obs.timer_add(update_text_source, check_interval_ms)
 
-display_texts = [
-    "-Introduce yourself",
-    "-Tell us about your relevant work experience",
-    "-Tell us about where you have used your IT skill in practice",
-    "-Tell us about your experience working in IT",
-    "-Why do you want to work in Algorithmics?",
-    "-Why should we hire you?"
-    ]
-
-def display_next_text(event):
-    global index
-    
-    with open(text_file, 'w') as f: f.write(display_texts[index])
-    
-    index += 1
-keyboard.on_press_key(trigger_key, display_next_text, suppress=True)
-
-keyboard.wait()
+def script_unload():
+    obs.timer_remove(update_text_source)
