@@ -23,4 +23,10 @@ def display_next_text(event):
     index += 1
 keyboard.on_press_key(trigger_key, display_next_text, suppress=True)
 
+def display_text_by_key(event):
+    with open(text_file, 'w') as f: f.write(display_texts[int(event.name)])
+    
+for i in range(10):
+    keyboard.on_press_key(str(i), display_text_by_key, suppress=True)
+
 keyboard.wait()
