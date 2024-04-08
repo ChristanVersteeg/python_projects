@@ -26,16 +26,18 @@ def parse_to_minutes(time):
 
 def image_to_timestamp():
     image = ImageGrab.grabclipboard()
-    img_byte_arr = BytesIO()
+    byte_array = BytesIO()
     
-    image.save(img_byte_arr, format='PNG')
-    img_byte_arr.seek(0)
+    image.save(byte_array, format='PNG')
+    byte_array.seek(0)
     
-    image = Image.open(img_byte_arr)
-    text = image_to_string(image, lang="eng")
+    image = Image.open(byte_array)
+    time = image_to_string(image, lang="eng")
+    time = time.replace("O", "0")
     
-    total_minutes = parse_to_minutes(text)
-    future_time = datetime.now() + timedelta(minutes=total_minutes)
+    current_time = datetime.now()
+    time_difference = timedelta(minutes=parse_to_minutes(time))
+    future_time = current_time + time_difference
     timestamp = int(future_time.timestamp())
     
     formatted_time = f"<t:{timestamp}:R>"
