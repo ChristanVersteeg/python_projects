@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 APA_fields = []
 
@@ -14,6 +15,16 @@ APA_fields.append(soup.find('span', class_='model-name__label', itemprop='name')
 APA_fields.append("Sketchfab")
 
 date_section = soup.find('section', class_='model-meta-row publication')
-APA_fields.append(date_section.find('div', class_='tooltip tooltip-down').text.strip()) # date
+date_text = date_section.find('div', class_='tooltip tooltip-down').text.strip() # date
+
+date_text = date_text.replace('st', '').replace('nd', '').replace('rd', '').replace('th', '')
+
+date_obj = datetime.strptime(date_text, '%b %d %Y')
+
+APA_fields.append(date_obj.year)
+APA_fields.append(date_obj.strftime('%B'))
+APA_fields.append(date_obj.day)
+
+APA_fields.append(url)
 
 print(APA_fields)
