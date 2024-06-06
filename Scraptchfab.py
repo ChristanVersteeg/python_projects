@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import unidecode
+import pyautogui
+from time import sleep
 
 urls = [
     "https://sketchfab.com/3d-models/brain-hologram-09d686a1a1f745cba6b2385d0c831214",
@@ -22,6 +24,8 @@ urls = [
     "https://sketchfab.com/3d-models/shrimple-arch-round-b97997962c194e48964f91a5899b464a",
     "https://sketchfab.com/3d-models/blood-vessel-collection-of-thunthu-d0c9a48f2e414157906f46b028e1b8db"
 ]
+
+sleep(3)
 
 for url in urls:
     response = requests.get(url)
@@ -45,6 +49,16 @@ for url in urls:
     username = unidecode.unidecode(username)
     model_name = unidecode.unidecode(model_name)
 
-    APA_fields = [username, model_name, "Sketchfab", year, month, day]
+    APA_fields = [username, model_name, "Sketchfab", str(year), month, str(day), url]
 
     print(APA_fields)
+    
+    pyautogui.hotkey('alt', '7')
+    pyautogui.press('tab', 2)
+    pyautogui.write(APA_fields[0])
+    pyautogui.press('tab', 3)
+    for i in range(1, 7):
+        pyautogui.write(APA_fields[i])
+        pyautogui.press('tab')
+    pyautogui.press('tab', 2)
+    pyautogui.press('enter')
