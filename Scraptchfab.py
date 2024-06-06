@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import unidecode
 
 urls = [
     "https://sketchfab.com/3d-models/brain-hologram-09d686a1a1f745cba6b2385d0c831214",
@@ -24,7 +25,8 @@ urls = [
 
 for url in urls:
     response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    response.encoding = 'utf-8'  
+    soup = BeautifulSoup(response.text, 'html.parser')
 
     username = soup.find('span', class_='username-wrapper', itemprop='name').text.strip()
     model_name = soup.find('span', class_='model-name__label', itemprop='name').text.strip()
@@ -37,8 +39,11 @@ for url in urls:
     date_obj = datetime.strptime(date_text, '%b %d %Y')
 
     year = date_obj.year
-    month = date_obj.strftime('%B') 
+    month = date_obj.strftime('%B')
     day = date_obj.day
+
+    username = unidecode.unidecode(username)
+    model_name = unidecode.unidecode(model_name)
 
     APA_fields = [username, model_name, "Sketchfab", year, month, day]
 
