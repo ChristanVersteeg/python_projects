@@ -1,0 +1,1 @@
+C:\Users\Christan\AppData\Local\Programs\Python\Python311\python.exe D:\Users\python_projects\RebindSatisSelectionKeys.py
