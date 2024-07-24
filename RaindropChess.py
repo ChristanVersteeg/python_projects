@@ -3,6 +3,14 @@ from enum import Enum
 import tkinter as tk
 import random
 
+RGBA = "RGBA"
+PIECE_WIDTH = 132
+PIECE_HEIGHT = 132
+PIECE_SCALE = 5
+PIECE_SCALED_WIDTH = PIECE_WIDTH * PIECE_SCALE
+PIECE_SCALED_HEIGHT = PIECE_HEIGHT* PIECE_SCALE
+JOKER = Image.new(RGBA, (PIECE_SCALED_WIDTH, PIECE_SCALED_HEIGHT), (255, 255, 255, 0))
+
 class Piece(Enum):
     KING = 0
     QUEEN = 1
@@ -10,44 +18,44 @@ class Piece(Enum):
     KNIGHT = 3
     ROOK = 4
     PAWN = 5
+    JOKER = 6
+PIECES_LENGTH = len(Piece) - 1
     
 class Color(Enum):
     WHITE = 0
     BLACK = 1
-
+COLORS_LENGTH = len(Color)
+    
 def split_pieces(image_path):
-    image = Image.open(image_path).convert("RGBA")
-    sub_image_width = 132
-    sub_image_height = 132
-    columns = 6
-    rows = 2
-    
-    piece_names = [Piece.KING, Piece.QUEEN, Piece.BISHOP, Piece.KNIGHT, Piece.ROOK, Piece.PAWN]
-    colors = [Color.WHITE, Color.BLACK]
-    
+    image = Image.open(image_path).convert(RGBA)
+
     pieces = {}
 
-    for row in range(rows):
-        for col in range(columns):
-            left = col * sub_image_width
-            upper = row * sub_image_height
-            right = left + sub_image_width
-            lower = upper + sub_image_height
+    for row in range(COLORS_LENGTH):
+        pieces[(Piece.JOKER, list(Color)[row])] = JOKER
+        for col in range(PIECES_LENGTH):
+            left = col * PIECE_WIDTH
+            upper = row * PIECE_HEIGHT
+            right = left + PIECE_WIDTH
+            lower = upper + PIECE_HEIGHT
             
             sub_image = image.crop((left, upper, right, lower))
-            piece_name = piece_names[col]
-            color = colors[row]
-            pieces[(piece_name, color)] = sub_image
+            sub_image = sub_image.resize((PIECE_SCALED_WIDTH, PIECE_SCALED_HEIGHT), Image.LANCZOS)
+            piece = list(Piece)[col]
+            color = list(Color)[row]
+            pieces[(piece, color)] = sub_image
     
     return pieces
 
 def create_random_stack():
     pieces = (
+        [Piece.KING] +
         [Piece.QUEEN] +
         [Piece.ROOK] * 2 +
         [Piece.BISHOP] * 2 +
         [Piece.KNIGHT] * 2 +
-        [Piece.PAWN] * 8
+        [Piece.PAWN] * 8 +
+        [Piece.JOKER] * 2
     )
     
     random.shuffle(pieces)
@@ -58,7 +66,11 @@ def display_pieces_tkinter(pieces, stacks):
     root = tk.Tk()
     label = tk.Label(root)
     label.pack()
-
+    
+    blank = ImageTk.PhotoImage(JOKER)
+    label.config(image=blank)
+    label.image = blank
+    
     def show_piece(color):
         stack = stacks[color.value]
         if stack:
