@@ -28,8 +28,6 @@ def main():
         "Press CTRL+C (or close window) to exit.\n"
     )
 
-    last_press_time = time.time()
-
     try:
         while True:
             # D-Pad: Arrow Keys
@@ -54,13 +52,13 @@ def main():
                 gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT)
 
             # Left Trigger (Numpad 4)
-            if keyboard.is_pressed("num 4"):
+            if keyboard.is_pressed("end"):
                 gamepad.left_trigger(value=255)
             else:
                 gamepad.left_trigger(value=0)
 
             # Right Trigger (Numpad 6)
-            if keyboard.is_pressed("num 6"):
+            if keyboard.is_pressed("page down"):
                 gamepad.right_trigger(value=255)
             else:
                 gamepad.right_trigger(value=0)
@@ -78,20 +76,20 @@ def main():
                 gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_START)
 
             if toggle:
-                now = time.time()
-                if (now - last_press_time) >= 0.5:
+               
+                while(toggle):
                     gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
                     gamepad.update()
-
-                    pydirectinput.click(button='right')
+                    
+                    pydirectinput.press('x')
 
                     gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
                     gamepad.update()
-
-                    last_press_time = now
-
+                    
+                    time.sleep(0.5)
+                    
             gamepad.update()
-            time.sleep(0.01)
+            time.sleep(0.02)
             
     except KeyboardInterrupt:
         print("\nExiting... Resetting controller.")
