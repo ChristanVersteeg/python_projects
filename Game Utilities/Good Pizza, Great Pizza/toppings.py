@@ -1,4 +1,4 @@
-import pyautogui; pyautogui.PAUSE = 0.01
+import pyautogui; pyautogui.PAUSE = 0.05
 import keyboard
 
 points = [
@@ -24,8 +24,12 @@ points = [
 ]
 
 def place_toppings(_):
+    pressed = 0
     for x, y in points:
-        pyautogui.click(x, y)
+        pyautogui.moveTo(x, y)
+        pyautogui.click()
+        pressed += 1
+    print(pressed)
 keyboard.on_press_key("t", place_toppings)
 
 keyboard.wait()
