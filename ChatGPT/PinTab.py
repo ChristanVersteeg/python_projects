@@ -1,5 +1,8 @@
 import win32gui as gui
 import win32con as con
+from time import sleep;
+
+sleep(3)
 
 hwnd = gui.GetForegroundWindow()
 
