@@ -1,32 +1,24 @@
 import os
 import fitz  # PyMuPDF library
 
-# --- Font and Directory Configuration ---
-FONT_DIR = "Fonts"
-FONT_REGULAR_FILE = "Inter-Regular.ttf"
-FONT_SEMIBOLD_FILE = "Inter-SemiBold.ttf"
-# ----------------------------------------
+# --- Font Configuration (DISCARDED CUSTOM FONTS) ---
+# We are now relying exclusively on built-in PDF fonts (Helvetica) for stability.
+# ---------------------------------------------------
 
-# Ensure we are in the correct directory (as requested by your provided code)
+# Ensure we are in the correct directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
-os.chdir(script_dir)
+# Check if we need to change directory (if script is run from elsewhere)
+if os.path.basename(os.getcwd()) != os.path.basename(script_dir):
+    os.chdir(script_dir)
 print("Working directory set to:", os.getcwd())
-
-# Pre-calculate the absolute paths for the font files
-FONT_PATH_REGULAR = os.path.join(script_dir, FONT_DIR, FONT_REGULAR_FILE)
-FONT_PATH_SEMIBOLD = os.path.join(script_dir, FONT_DIR, FONT_SEMIBOLD_FILE)
-
-# Create a mapping of the font key (from REPLACEMENTS_CONFIG) to the actual file path
-FONT_PATH_MAP = {
-    "Inter-Regular": FONT_PATH_REGULAR,
-    "Inter-SemiBold": FONT_PATH_SEMIBOLD
-}
 
 
 def replace_static_pdf_text(input_pdf_path: str, output_pdf_path: str, replacements_config: list):
     """
-    Replaces text in a PDF using the page.insert_text(fontfile=...) method
-    to bypass document-level font loading errors.
+    Replaces text in a PDF using the reliable built-in PDF fonts (helv, helv-bold).
+    
+    This approach guarantees bolding functionality and consistent font rendering
+    without relying on external TTF files.
     """
     doc = None
     try:
@@ -34,18 +26,10 @@ def replace_static_pdf_text(input_pdf_path: str, output_pdf_path: str, replaceme
             print(f"Error: The input file was not found at '{input_pdf_path}'. Please check the path.")
             return
 
-        # 1. Quick check to ensure font files exist before opening the document
-        for path in FONT_PATH_MAP.values():
-            if not os.path.exists(path):
-                print(f"CRITICAL ERROR: Font file not found: {path}")
-                print("Please ensure your font files are in the correct location.")
-                return
-
         # Open the original PDF document
         doc = fitz.open(input_pdf_path)
         replaced_count = 0
 
-        # Iterate through every page in the document
         for page_num in range(len(doc)):
             page = doc.load_page(page_num)
             
@@ -56,52 +40,60 @@ def replace_static_pdf_text(input_pdf_path: str, output_pdf_path: str, replaceme
             for config in replacements_config:
                 old_text = config['old_text']
                 new_text = config['new_text']
-                offset_multiplier = config['offset_multiplier']
+                # Use a functional default offset multiplier for vertical positioning
+                offset_multiplier = config.get('offset_multiplier', 0.8) 
                 
-                # Get the font path directly from the map
-                font_key = config.get('font_to_use', 'Helvetica') 
-                # This will be the file path string, or 'Helvetica' (if key is missing)
-                font_file_path = FONT_PATH_MAP.get(font_key) 
+                # Get the point offset 
+                size_offset_pts = config.get('fontsize_offset_pts', 0.0) 
                 
-                # Search for occurrences of the old text on the page
+                # Use the built-in font key ('helv' or 'helv-bold')
+                font_key = config.get('font_to_use', 'helv') 
+                
                 text_instances = page.search_for(old_text)
                 
                 if text_instances:
                     print(f"Found {len(text_instances)} instances of '{old_text}' on page {page_num + 1}.")
                     
                     for inst in text_instances:
-                        original_font_size = inst.height * 0.9 
+                        # CALCULATE BASE SIZE: Use 90% of the original text's bounding box height 
+                        default_calculated_size = inst.height * 0.9 
+                        
+                        # APPLY OFFSET: Add the point offset to the base size.
+                        final_fontsize = default_calculated_size + size_offset_pts
+                        
+                        print(f"  Final Font Size: {final_fontsize:.2f}pts, Font Name: {font_key}")
                         
                         # Add the redaction annotation
                         redact_area = fitz.Rect(inst)
                         page.add_redact_annot(redact_area)
                         redaction_applied = True
                         
-                        # Calculate a custom vertical offset based on the multiplier
-                        offset_point = fitz.Point(inst.tl.x, inst.tl.y + inst.height * offset_multiplier)
-
+                        # Calculate insertion position (top-left point)
+                        top_left_point = fitz.Point(inst.tl.x, inst.tl.y + inst.height * offset_multiplier)
+                        
                         # Store the insertion details
                         insert_data.append({
-                            'point': offset_point,
+                            'point': top_left_point, 
                             'text': new_text,
-                            'fontsize': original_font_size,
-                            'font_path': font_file_path # Store the file path instead of a font ID
+                            'fontsize': final_fontsize,
+                            'fontname': font_key # Pass the built-in font name
                         })
                         
                         replaced_count += 1
             
             # 2. Second Pass: Apply Redactions and Insert Text
             if redaction_applied:
+                # A. Apply all redactions (This physically removes the old text)
                 page.apply_redactions()
 
+                # B. Insert the new text into the now-empty space
                 for item in insert_data:
-                    # **CRITICAL FIX**: Use the 'fontfile' parameter for insertion
-                    # This tells PyMuPDF to load, embed, and use the font directly from the file path.
+                    # Use insert_text, passing the fontname for built-in fonts
                     page.insert_text(
                         item['point'], 
                         item['text'], 
                         fontsize=item['fontsize'], 
-                        fontfile=item['font_path'] 
+                        fontname=item['fontname'] 
                     )
 
         if replaced_count > 0:
@@ -116,32 +108,39 @@ def replace_static_pdf_text(input_pdf_path: str, output_pdf_path: str, replaceme
         if doc:
             doc.close()
 
-# --- User Configuration ---
+# ----------------------------------------------------------------------
+## User Configuration
+# ----------------------------------------------------------------------
 
 # 1. Define the input and output file paths
 INPUT_FILE = "original_document.pdf"
-OUTPUT_FILE = "invoice_updated_static_inter_font.pdf"
+OUTPUT_FILE = "invoice_modified_offset_final.pdf" 
 
-# 2. Define the exact text replacements and their custom vertical offsets.
-# The 'font_to_use' keys map to the paths defined at the top of the script.
+# 2. Define the exact text replacements.
 REPLACEMENTS_CONFIG = [
     {
         "old_text": "Receipt", 
         "new_text": "Invoice", 
         "offset_multiplier": 0.8,
-        "font_to_use": "Inter-SemiBold"  # Maps to Inter-SemiBold.ttf path
+        # Now using the reliable built-in Helvetica Bold
+        "font_to_use": "Helvetica-Bold", 
+        "fontsize_offset_pts": 0
     },
     {
         "old_text": "Andrew Johson", 
         "new_text": "Christan Versteeg", 
         "offset_multiplier": 0.8,
-        "font_to_use": "Inter-Regular"       # Maps to Inter-Regular.ttf path
+        # Now using the reliable built-in Helvetica Regular
+        "font_to_use": "helv",
+        "fontsize_offset_pts": -1
     },
     {
         "old_text": "anicver@gmail.com", 
         "new_text": "chrisjaver@gmail.com", 
         "offset_multiplier": 0.8,
-        "font_to_use": "Inter-Regular"       # Maps to Inter-Regular.ttf path
+        # Now using the reliable built-in Helvetica Regular
+        "font_to_use": "helv",
+        "fontsize_offset_pts": -1
     }
 ]
 
