@@ -1,8 +1,9 @@
+
 import itertools
 import time
 
 # --- Configuration ---
-TARGET_PASSWORD = "welcome123"
+TARGET_PASSWORD = "Welkom2020"
 DICTIONARY_FILE = "wordlist.txt"
 MAX_COMBINATION_LENGTH = 3  # Try combinations up to this many words
 STATUS_UPDATE_INTERVAL = 0.0001 # Seconds between progress prints
