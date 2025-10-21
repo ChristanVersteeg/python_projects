@@ -55,23 +55,21 @@ def scan_and_hover():
     print(f"[INFO] Scanning area: ({left}, {top}) to ({right}, {bottom})")
 
     screenshot = pyautogui.screenshot(region=(left, top, width, height))
-    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)  # grayscale
+    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
 
     matched_points = []
 
-    threshold = 0.3  # tune this as needed
+    threshold = 0.4  # Tune this as needed
 
     for template, (w, h) in zip(templates, template_sizes):
         res = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
         loc = np.where(res >= threshold)
         points = list(zip(*loc[::-1]))
 
-        # Collect rectangles around matches for grouping
         rects = []
         for pt in points:
             rects.append([pt[0], pt[1], w, h])
 
-        # Group overlapping rectangles to avoid multiple detections of the same dice
         rects, _ = cv2.groupRectangles(rects, groupThreshold=1, eps=0.5)
 
         for (x, y, w_rect, h_rect) in rects:
@@ -79,14 +77,12 @@ def scan_and_hover():
             screen_y = top + y + h_rect // 2
             matched_points.append((screen_x, screen_y))
 
-    # Filter points by CLICK_MARGIN (avoid duplicates)
     filtered_points = []
     for p in matched_points:
         if all(abs(p[0] - fp[0]) > CLICK_MARGIN or abs(p[1] - fp[1]) > CLICK_MARGIN for fp in filtered_points):
             filtered_points.append(p)
 
-    # Move cursor (hover) over each unique point quickly
-    pyautogui.PAUSE = 0.01  # remove pause between commands
+    pyautogui.PAUSE = 0.01
     for (x, y) in filtered_points:
         pyautogui.moveTo(x, y)
         print(f"[HOVER] at ({x}, {y})")
@@ -94,21 +90,36 @@ def scan_and_hover():
     clicked_positions = filtered_points
     print(f"[INFO] Hovered over {len(filtered_points)} positions.")
 
-def exit_script():
-    print("[INFO] Exiting script.")
-    sys.exit(0)
-
 def main():
     print("ssDice Auto Hover Ready")
     print("Press 's' twice to define scan area (top-left then bottom-right).")
-    print("Press 'f' to scan and hover over dice.")
-    print("Press 'esc' to exit.")
+    print("Press 'D' to stop the auto-hover loop.")
+    print("Waiting for scan area to be set...")
 
     keyboard.add_hotkey('s', set_scan_point)
-    keyboard.add_hotkey('f', scan_and_hover)
-    keyboard.add_hotkey('esc', exit_script)
 
-    keyboard.wait()
+    # Wait for scan area to be set
+    while len(scan_area) < 2:
+        if keyboard.is_pressed('D'):
+            exit_script()
+        time.sleep(0.1)
+
+    print("[INFO] Starting auto-hover loop.")
+
+    try:
+        while True:
+            if keyboard.is_pressed('D'):
+                print("[INFO] 'D' pressed. Exiting.")
+                break
+            scan_and_hover()
+    except KeyboardInterrupt:
+        print("[INFO] Interrupted by user.")
+    finally:
+        exit_script()
+
+def exit_script():
+    print("[INFO] Exiting script.")
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()
