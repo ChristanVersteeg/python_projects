@@ -9,14 +9,22 @@ import sys
 # Settings
 CLICK_MARGIN = 100
 TEMPLATE_FILES = [f'dice_{i}.png' for i in range(1, 7)]
-clicked_positions = []
 scan_area = []
+clicked_positions = []
 
-def is_far_enough(pos, others):
-    for ox, oy in others:
-        if abs(pos[0] - ox) < CLICK_MARGIN and abs(pos[1] - oy) < CLICK_MARGIN:
-            return False
-    return True
+# Load templates once
+templates = []
+template_sizes = []
+for tf in TEMPLATE_FILES:
+    if os.path.exists(tf):
+        tpl = cv2.imread(tf, cv2.IMREAD_GRAYSCALE)
+        if tpl is not None:
+            templates.append(tpl)
+            template_sizes.append((tpl.shape[1], tpl.shape[0]))
+        else:
+            print(f"[ERROR] Failed to load template {tf}")
+    else:
+        print(f"[WARN] Template not found: {tf}")
 
 def get_scan_area():
     if len(scan_area) != 2:
@@ -29,11 +37,11 @@ def set_scan_point():
     pos = pyautogui.position()
     if len(scan_area) < 2:
         scan_area.append(pos)
-        print(f"[INFO] Point {len(scan_area)} set at {pos}")
+        print(f"[INFO] Scan point {len(scan_area)} set at {pos}")
     else:
-        print("[WARN] Already have 2 scan points. Restart to reset.")
+        print("[WARN] Scan area already set. Restart to reset.")
 
-def scan_and_click():
+def scan_and_hover():
     global clicked_positions
     area = get_scan_area()
     if area is None:
@@ -47,53 +55,59 @@ def scan_and_click():
     print(f"[INFO] Scanning area: ({left}, {top}) to ({right}, {bottom})")
 
     screenshot = pyautogui.screenshot(region=(left, top, width, height))
-    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
+    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)  # grayscale
 
-    matched = 0
+    matched_points = []
 
-    for template_file in TEMPLATE_FILES:
-        if not os.path.exists(template_file):
-            print(f"[WARN] Missing template: {template_file}")
-            continue
+    threshold = 0.3  # tune this as needed
 
-        template = cv2.imread(template_file)
-        if template is None:
-            print(f"[ERROR] Failed to load: {template_file}")
-            continue
-
+    for template, (w, h) in zip(templates, template_sizes):
         res = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
-        threshold = 0.3
         loc = np.where(res >= threshold)
-        w, h = template.shape[1], template.shape[0]
+        points = list(zip(*loc[::-1]))
 
-    for pt in zip(*loc[::-1]):
-        screen_x = left + pt[0] + w // 2
-        screen_y = top + pt[1] + h // 2
-        if is_far_enough((screen_x, screen_y), clicked_positions):
-            pyautogui.moveTo(screen_x, screen_y)  # ← changed from click to hover
-            clicked_positions.append((screen_x, screen_y))
-            print(f"[HOVER] ({screen_x}, {screen_y}) using {template_file}")
-            time.sleep(0.01)  # add a short delay to avoid too-fast movement
+        # Collect rectangles around matches for grouping
+        rects = []
+        for pt in points:
+            rects.append([pt[0], pt[1], w, h])
 
+        # Group overlapping rectangles to avoid multiple detections of the same dice
+        rects, _ = cv2.groupRectangles(rects, groupThreshold=1, eps=0.5)
 
-    print(f"[INFO] Done. {matched} clicks made.")
+        for (x, y, w_rect, h_rect) in rects:
+            screen_x = left + x + w_rect // 2
+            screen_y = top + y + h_rect // 2
+            matched_points.append((screen_x, screen_y))
+
+    # Filter points by CLICK_MARGIN (avoid duplicates)
+    filtered_points = []
+    for p in matched_points:
+        if all(abs(p[0] - fp[0]) > CLICK_MARGIN or abs(p[1] - fp[1]) > CLICK_MARGIN for fp in filtered_points):
+            filtered_points.append(p)
+
+    # Move cursor (hover) over each unique point quickly
+    pyautogui.PAUSE = 0.01  # remove pause between commands
+    for (x, y) in filtered_points:
+        pyautogui.moveTo(x, y)
+        print(f"[HOVER] at ({x}, {y})")
+
+    clicked_positions = filtered_points
+    print(f"[INFO] Hovered over {len(filtered_points)} positions.")
 
 def exit_script():
     print("[INFO] Exiting script.")
     sys.exit(0)
 
 def main():
-    print("ssDice Auto Clicker Ready")
+    print("ssDice Auto Hover Ready")
     print("Press 's' twice to define scan area (top-left then bottom-right).")
-    print("Press 'f' to scan and click dice.")
+    print("Press 'f' to scan and hover over dice.")
     print("Press 'esc' to exit.")
 
-    # Register hotkeys
     keyboard.add_hotkey('s', set_scan_point)
-    keyboard.add_hotkey('f', scan_and_click)
+    keyboard.add_hotkey('f', scan_and_hover)
     keyboard.add_hotkey('esc', exit_script)
 
-    # Idle wait for hotkeys
     keyboard.wait()
 
 if __name__ == "__main__":
