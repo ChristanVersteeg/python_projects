@@ -2,3 +2,5 @@ desktop.ini
 __pycache__/
 *.exe
 /PDFModifiers/images
+/BackgroundRemover/input
+/BackgroundRemover/processed_outputs

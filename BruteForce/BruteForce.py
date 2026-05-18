@@ -1,12 +1,11 @@
-
 import itertools
 import time
 
 # --- Configuration ---
-TARGET_PASSWORD = "Welkom2020"
-DICTIONARY_FILE = "wordlist.txt"
-MAX_COMBINATION_LENGTH = 3  # Try combinations up to this many words
-STATUS_UPDATE_INTERVAL = 0.0001 # Seconds between progress prints
+TARGET_PASSWORD = "marine-renter-bootleg"
+DICTIONARY_FILE = "eff_large_wordlist.txt"
+MAX_COMBINATION_LENGTH = 3 
+STATUS_UPDATE_INTERVAL = 0.0001 
 
 
 def load_dictionary(path):
@@ -31,7 +30,7 @@ def simulate_brute_force_combo_attack():
 
     for r in range(1, MAX_COMBINATION_LENGTH + 1):
         for combo in itertools.product(words, repeat=r):
-            guess = ''.join(combo)
+            guess = '-'.join(combo)
             attempts += 1
 
             current_time = time.time()
