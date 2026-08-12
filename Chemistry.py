@@ -11,7 +11,7 @@ deq = 1
 class particle:
     def __init__(self, index):
         self.index = index
-        self.pos = [0,0]
+        self.pos = [uniform(-5,5), uniform(-5,5)]
         self.prev = []
         self.mass = uniform(1,2)
         self.velocity = [uniform(-1,1), uniform(-1,1)]
@@ -21,6 +21,7 @@ class particle:
         self.limits = [[100, -100] , [100, -100]]
     
     def propagate(self, dt):
+        
         self.prev.append(deepcopy(self.pos))
         if ((self.velocity[0]*dt + self.pos[0]) > self.limits[0][0]):
             self.pos[0] = self.limits[0][0] - (self.velocity[0]*dt-(self.limits[0][0]-self.pos[0]))
@@ -44,8 +45,13 @@ class particle:
            if id(self) != id(p):
                r = p.pos - self.pos
                d = np.sqrt(r[0]**2+r[1]**2)
-               F = (-2*ediss*alpha*np.e**(d - deq)*(1 - np.e**(alpha*(d - deq))))*r/d
-               
+               Force = (-2*ediss*alpha*np.e**(d - deq)*(1 - np.e**(alpha*(d - deq))))*r/d
+               self.F += Force
+        self.acceleration = self.F / self.mass
+    
+    
+    def adj_vel (self):
+        
                
                
                
