@@ -4,17 +4,17 @@ import numpy as np
 from random import uniform
 from copy import deepcopy
 
-ediss = 10
+ediss = 100
 alpha = 1
 deq = 1
 
 class particle:
     def __init__(self, index):
         self.index = index
-        self.pos = [0, uniform(-0.5,0.5)]
+        self.pos = [0, uniform(-1,1)]
         self.prev = []
         self.mass = 1
-        self.velocity = [0, uniform(-1,1)]
+        self.velocity = [0, 0]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
         self.F = [0,0]
