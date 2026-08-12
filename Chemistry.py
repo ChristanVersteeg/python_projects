@@ -48,7 +48,7 @@ class particle:
            if id(self) != id(p):
                r = p.pos - self.pos
                d = np.sqrt(r[0]**2+r[1]**2)
-               Force = (-2*ediss*alpha*np.e**(d - deq)*(1 - np.e**(alpha*(d - deq))))*r/d
+               Force = (-2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))*r/d
                self.F += Force
         self.acceleration = self.F / self.mass
     
