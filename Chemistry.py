@@ -70,8 +70,8 @@ for i in range(2):
     particles.append(particle(i))
 for j in particles:
     j.calc_forces(particles)    
-    #for i in range(2):
-        #j.propagate(1)       
+    for i in range(2):
+        j.propagate(1)       
     
 """
 fig, axes = plt.subplots(1,1, figsize =(10,5))
