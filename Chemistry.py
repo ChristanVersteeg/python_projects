@@ -70,9 +70,9 @@ for i in range(2):
 for j in particles:
     for i in range(2):
         j.propagate(1)       
-        
+    j.calc_forces(particles)    
 
-
+"""
 fig, axes = plt.subplots(1,1, figsize =(10,5))
 
 axes.set_xlim(-100, 100)
@@ -109,3 +109,4 @@ for particle in particles:
     line, = axes.plot(trajectory[:,0], trajectory[:,1],'o')
 '''
 plt.show()
+"""
