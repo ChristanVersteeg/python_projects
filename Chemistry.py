@@ -51,7 +51,8 @@ class particle:
             self.velocity[1] *= -1
         else:
             self.pos[1] += self.velocity[1]*dt
-   
+  
+    
 
     
     
@@ -83,8 +84,9 @@ for i in range(len(particles)):
 
 def update(i):
     
-    #for j in range(100):
+    
     for j in range(len(particles)):
+        #particles[j].calc_forces()
         particles[j].propagate(1)
         
         lines[j].set_xdata([particles[j].pos[0]])
