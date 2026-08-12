@@ -33,8 +33,8 @@ class particle:
     
     def propagate(self, dt):
         
-        self.velocity += self.acceleration * dt
-        
+        self.velocity[0] += self.acceleration[0] * dt
+        self.velocity[1] += self.acceleration[1] * dt
         
         self.prev.append(deepcopy(self.pos))
         if ((self.velocity[0]*dt + self.pos[0]) > self.limits[0][0]):
@@ -68,11 +68,17 @@ class particle:
 particles = []
 for i in range(2):
     particles.append(particle(i))
-for j in particles:
-    j.calc_forces(particles)    
+#for j in particles:
+    #j.calc_forces(particles)    
+for j in particles:   
     for i in range(2):
         j.propagate(1)       
-    
+
+for i in range(6):
+    for j in particles:
+        j.calc_forces(particles)    
+    for k in particles:
+        k.propagate(1)
 """
 fig, axes = plt.subplots(1,1, figsize =(10,5))
 
@@ -89,7 +95,7 @@ def update(i):
     
     
     for j in range(len(particles)):
-        #particles[j].calc_forces(particles)
+        particles[j].calc_forces(particles)
         particles[j].propagate(1)
         
         lines[j].set_xdata([particles[j].pos[0]])
