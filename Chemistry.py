@@ -17,10 +17,13 @@ class particle:
         self.velocity = [uniform(-1,1), uniform(-1,1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
-        self.F = 0
+        self.F = [0,0]
         self.limits = [[100, -100] , [100, -100]]
     
     def propagate(self, dt):
+        
+        self.velocity += self.acceleration * dt
+        
         
         self.prev.append(deepcopy(self.pos))
         if ((self.velocity[0]*dt + self.pos[0]) > self.limits[0][0]):
@@ -41,7 +44,7 @@ class particle:
             self.pos[1] += self.velocity[1]*dt
    
     def calc_forces(self, particles):
-       for i,p in enumerate(particles):
+        for i,p in enumerate(particles):
            if id(self) != id(p):
                r = p.pos - self.pos
                d = np.sqrt(r[0]**2+r[1]**2)
@@ -50,8 +53,7 @@ class particle:
         self.acceleration = self.F / self.mass
     
     
-    def adj_vel (self):
-        
+
                
                
                
