@@ -23,11 +23,12 @@ class particle:
     def calc_forces(self, particles):
         for i,p in enumerate(particles):
            if id(self) != id(p):
-               r = p.pos - self.pos
+               r = [p.pos[0] - self.pos[0], p.pos[1] - self.pos[1]]
                d = np.sqrt(r[0]**2+r[1]**2)
                Force = r/(d*(1/(-2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))))
                self.F += Force
         self.acceleration = self.F / self.mass
+       
     
     def propagate(self, dt):
         
@@ -69,6 +70,7 @@ for i in range(2):
 for j in particles:
     for i in range(2):
         j.propagate(1)       
+        
 
 
 fig, axes = plt.subplots(1,1, figsize =(10,5))
@@ -86,7 +88,7 @@ def update(i):
     
     
     for j in range(len(particles)):
-        #particles[j].calc_forces()
+        #particles[j].calc_forces(particles)
         particles[j].propagate(1)
         
         lines[j].set_xdata([particles[j].pos[0]])
@@ -94,7 +96,7 @@ def update(i):
         
     
     return lines
-    
+
 ani1 = animation.FuncAnimation(fig     = fig,
                               func     = update,
                               frames   = 180,
