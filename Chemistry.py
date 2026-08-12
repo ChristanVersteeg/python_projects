@@ -4,17 +4,17 @@ import numpy as np
 from random import uniform
 from copy import deepcopy
 
-ediss = 1
+ediss = 10
 alpha = 1
 deq = 1
 
 class particle:
     def __init__(self, index):
         self.index = index
-        self.pos = [uniform(-5,5), uniform(-5,5)]
+        self.pos = [0, uniform(-0.5,0.5)]
         self.prev = []
-        self.mass = uniform(1,2)
-        self.velocity = [uniform(-1,1), uniform(-1,1)]
+        self.mass = 1
+        self.velocity = [0, uniform(-1,1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
         self.F = [0,0]
@@ -53,6 +53,7 @@ class particle:
             self.velocity[1] *= -1
         else:
             self.pos[1] += self.velocity[1]*dt
+        self.F = [0,0]
   
     
 
@@ -73,7 +74,7 @@ for i in range(2):
 for j in particles:   
     for i in range(2):
         j.propagate(1)       
-
+"""
 for i in range(6):
     for j in particles:
         j.calc_forces(particles)    
@@ -96,7 +97,7 @@ def update(i):
     
     for j in range(len(particles)):
         particles[j].calc_forces(particles)
-        particles[j].propagate(1)
+        particles[j].propagate(0.05)
         
         lines[j].set_xdata([particles[j].pos[0]])
         lines[j].set_ydata([particles[j].pos[1]])        
@@ -108,7 +109,7 @@ ani1 = animation.FuncAnimation(fig     = fig,
                               func     = update,
                               frames   = 180,
                               interval = 60,
-                              repeat = True,
+                              repeat = False,
                               blit=True)
 '''
 for particle in particles:   
@@ -116,4 +117,3 @@ for particle in particles:
     line, = axes.plot(trajectory[:,0], trajectory[:,1],'o')
 '''
 plt.show()
-"""
