@@ -20,6 +20,15 @@ class particle:
         self.F = [0,0]
         self.limits = [[100, -100] , [100, -100]]
     
+    def calc_forces(self, particles):
+        for i,p in enumerate(particles):
+           if id(self) != id(p):
+               r = p.pos - self.pos
+               d = np.sqrt(r[0]**2+r[1]**2)
+               Force = r/(d*(1/(-2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))))
+               self.F += Force
+        self.acceleration = self.F / self.mass
+    
     def propagate(self, dt):
         
         self.velocity += self.acceleration * dt
@@ -43,14 +52,7 @@ class particle:
         else:
             self.pos[1] += self.velocity[1]*dt
    
-    def calc_forces(self, particles):
-        for i,p in enumerate(particles):
-           if id(self) != id(p):
-               r = p.pos - self.pos
-               d = np.sqrt(r[0]**2+r[1]**2)
-               Force = r/(d*(1/(-2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))))
-               self.F += Force
-        self.acceleration = self.F / self.mass
+
     
     
 
