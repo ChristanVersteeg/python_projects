@@ -28,6 +28,7 @@ class particle:
                Force = r/(d*(1/(-2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))))
                self.F += Force
         self.acceleration = self.F / self.mass
+        print(self.F)
        
     
     def propagate(self, dt):
@@ -68,10 +69,10 @@ particles = []
 for i in range(2):
     particles.append(particle(i))
 for j in particles:
-    for i in range(2):
-        j.propagate(1)       
     j.calc_forces(particles)    
-
+    #for i in range(2):
+        #j.propagate(1)       
+    
 """
 fig, axes = plt.subplots(1,1, figsize =(10,5))
 
