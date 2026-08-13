@@ -18,7 +18,7 @@ class particle:
         self.v_prev = [0,0]
         self.acceleration = [0,0]
         self.F = [0,0]
-        self.limits = [[10, -10] , [10, -10]]
+        self.limits = [[100, -100] , [100, -100]]
     
     def calc_forces(self, particles):
         for i,p in enumerate(particles):
