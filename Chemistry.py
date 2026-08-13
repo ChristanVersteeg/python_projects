@@ -11,21 +11,21 @@ deq = 1
 class particle:
     def __init__(self, index):
         self.index = index
-        self.pos = [0, uniform(-1,1)]
+        self.pos = [0, uniform(-2,2)]
         self.prev = []
         self.mass = 1
         self.velocity = [0, 0]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
         self.F = [0,0]
-        self.limits = [[100, -100] , [100, -100]]
+        self.limits = [[10, -10] , [10, -10]]
     
     def calc_forces(self, particles):
         for i,p in enumerate(particles):
            if id(self) != id(p):
                r = [p.pos[0] - self.pos[0], p.pos[1] - self.pos[1]]
                d = np.sqrt(r[0]**2+r[1]**2)
-               Force = r/(d*(1/(-2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))))
+               Force = r/(d*(1/(2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))))
                self.F += Force
         self.acceleration = self.F / self.mass
         print(self.F)
@@ -83,8 +83,8 @@ for i in range(6):
 """
 fig, axes = plt.subplots(1,1, figsize =(10,5))
 
-axes.set_xlim(-100, 100)
-axes.set_ylim(-100, 100)
+axes.set_xlim(-10, 10)
+axes.set_ylim(-10, 10)
 
 lines = []
 
@@ -97,6 +97,7 @@ def update(i):
     
     for j in range(len(particles)):
         particles[j].calc_forces(particles)
+    for j in range(len(particles)):    
         particles[j].propagate(0.05)
         
         lines[j].set_xdata([particles[j].pos[0]])
