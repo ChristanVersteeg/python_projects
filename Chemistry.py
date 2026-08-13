@@ -4,7 +4,7 @@ import numpy as np
 from random import uniform
 from copy import deepcopy
 
-ediss = 100
+ediss = 50
 alpha = 1
 deq = 1
 
@@ -14,11 +14,11 @@ class particle:
         self.pos = [0, uniform(-2,2)]
         self.prev = []
         self.mass = 1
-        self.velocity = [0, 0]
+        self.velocity = [uniform(1, -1), uniform(-1, 1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
         self.F = [0,0]
-        self.limits = [[100, -100] , [100, -100]]
+        self.limits = [[10, -10] , [10, -10]]
     
     def calc_forces(self, particles):
         for i,p in enumerate(particles):
@@ -67,12 +67,12 @@ class particle:
 
             
 particles = []
-for i in range(2):
+for i in range(10):
     particles.append(particle(i))
 #for j in particles:
     #j.calc_forces(particles)    
 for j in particles:   
-    for i in range(2):
+    for i in range(3):
         j.propagate(1)       
 """
 for i in range(6):
