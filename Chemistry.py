@@ -6,11 +6,11 @@ from copy import deepcopy
 from scipy import constants
 
 
-ediss = 50
+ediss = 5000
 alpha = 1
 deq = 1
-t0 = 10
-damping = 0.001
+t0 = 1
+damping = 0.01
 
 
 class particle:
@@ -18,7 +18,7 @@ class particle:
         self.index = index
         self.pos = [0, uniform(-2,2)]
         self.prev = []
-        self.mass = 1
+        self.mass = 100
         self.velocity = [uniform(1, -1), uniform(-1, 1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
@@ -37,10 +37,12 @@ class particle:
     
     def sum_energy(self, e_kin_tot):
            e_kin_tot += 0.5* self.mass * np.sqrt(self.velocity[0]**2+self.velocity[1]**2)
+           print(np.sqrt(self.velocity[0]**2+self.velocity[1]**2))
     
     def adj_vel(self, friction):
         self.velocity[0] *= friction
         self.velocity[1] *= friction
+        print(np.sqrt(self.velocity[0]**2+self.velocity[1]**2))
     
     def propagate(self, dt):
         
@@ -79,7 +81,7 @@ class particle:
 
             
 particles = []
-for i in range(3):
+for i in range(2):
     particles.append(particle(i))
 #for j in particles:
     #j.calc_forces(particles)    
@@ -114,13 +116,15 @@ def update(i):
         
         lines[j].set_xdata([particles[j].pos[0]])
         lines[j].set_ydata([particles[j].pos[1]])        
+    print("before friction")
     for j in particles:
         j.sum_energy(e_kin_tot)
     
     friction = 1.0 - damping*np.clip((((e_kin_tot)/(len(particles)*constants.Boltzmann)-t0)/(t0)), -1, 1)**3
+    print("after friction")
     for j in particles:
         j.adj_vel(friction)
-    
+    print("-")
         
     
     
