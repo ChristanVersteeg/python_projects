@@ -5,12 +5,12 @@ from random import uniform
 from copy import deepcopy
 from scipy import constants
 
-
+# ediss wurde willkürlich gewählt, t0 entsprechend angepasst (physikalisch nicht unbedingt sinnvoll)
 ediss = 50*constants.proton_mass
 alpha = 1
 deq = 1
-t0 = 1e-4
-damping = 0.3
+t0 = 2e-5
+damping = 0.1
 
 
 class particle:
@@ -82,7 +82,7 @@ class particle:
 
             
 particles = []
-for i in range(10):
+for i in range(5):
     particles.append(particle(i))
 #for j in particles:
     #j.calc_forces(particles)    
