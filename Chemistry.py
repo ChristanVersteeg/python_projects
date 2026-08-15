@@ -3,10 +3,15 @@ import matplotlib.animation as animation
 import numpy as np
 from random import uniform
 from copy import deepcopy
+from scipy import constants
+
 
 ediss = 50
 alpha = 1
 deq = 1
+t0 = 10
+damping = 0.001
+
 
 class particle:
     def __init__(self, index):
@@ -28,8 +33,14 @@ class particle:
                Force = r/(d*(1/(2*ediss*alpha*np.e**(-alpha*(d - deq))*(1 - np.e**(-alpha*(d - deq))))))
                self.F += Force
         self.acceleration = self.F / self.mass
-        print(self.F)
-       
+        #print(self.F)
+    
+    def sum_energy(self, e_kin_tot):
+           e_kin_tot += 0.5* self.mass * np.sqrt(self.velocity[0]**2+self.velocity[1]**2)
+    
+    def adj_vel(self, friction):
+        self.velocity[0] *= friction
+        self.velocity[1] *= friction
     
     def propagate(self, dt):
         
@@ -54,6 +65,7 @@ class particle:
         else:
             self.pos[1] += self.velocity[1]*dt
         self.F = [0,0]
+        self.v_prev = self.velocity
   
     
 
@@ -67,7 +79,7 @@ class particle:
 
             
 particles = []
-for i in range(10):
+for i in range(3):
     particles.append(particle(i))
 #for j in particles:
     #j.calc_forces(particles)    
@@ -94,7 +106,7 @@ for i in range(len(particles)):
 
 def update(i):
     
-    
+    e_kin_tot = 0
     for j in range(len(particles)):
         particles[j].calc_forces(particles)
     for j in range(len(particles)):    
@@ -102,7 +114,15 @@ def update(i):
         
         lines[j].set_xdata([particles[j].pos[0]])
         lines[j].set_ydata([particles[j].pos[1]])        
+    for j in particles:
+        j.sum_energy(e_kin_tot)
+    
+    friction = 1.0 - damping*np.clip((((e_kin_tot)/(len(particles)*constants.Boltzmann)-t0)/(t0)), -1, 1)**3
+    for j in particles:
+        j.adj_vel(friction)
+    
         
+    
     
     return lines
 
@@ -110,7 +130,7 @@ ani1 = animation.FuncAnimation(fig     = fig,
                               func     = update,
                               frames   = 180,
                               interval = 60,
-                              repeat = False,
+                              repeat = True,
                               blit=True)
 '''
 for particle in particles:   
