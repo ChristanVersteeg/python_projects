@@ -9,21 +9,21 @@ from scipy import constants
 ediss = 50*constants.proton_mass
 alpha = 1
 deq = 1
-t0 = 2e-5
-damping = 0.1
+t0 = 1e-5
+damping = 0.25
 
 
 class particle:
     def __init__(self, index):
         self.index = index
-        self.pos = [uniform(-1,1), uniform(-1,1)]
+        self.pos = [uniform(-5,5), uniform(-5,5)]
         self.prev = []
         self.mass = constants.proton_mass
         self.velocity = [uniform(1, -1), uniform(-1, 1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
         self.F = [0,0]
-        self.limits = [[10, -10] , [10, -10]]
+        self.limits = [[20, -20] , [20, -20]]
     
     def calc_forces(self, particles):
         for i,p in enumerate(particles):
@@ -82,7 +82,7 @@ class particle:
 
             
 particles = []
-for i in range(5):
+for i in range(10):
     particles.append(particle(i))
 #for j in particles:
     #j.calc_forces(particles)    
@@ -98,8 +98,8 @@ for i in range(6):
 """
 fig, axes = plt.subplots(1,1, figsize =(10,5))
 
-axes.set_xlim(-10, 10)
-axes.set_ylim(-10, 10)
+axes.set_xlim(-20, 20)
+axes.set_ylim(-20, 20)
 
 lines = []
 
