@@ -6,19 +6,19 @@ from copy import deepcopy
 from scipy import constants
 
 
-ediss = 5000
+ediss = 50*constants.proton_mass
 alpha = 1
 deq = 1
-t0 = 1
-damping = 0.01
+t0 = 1e-4
+damping = 0.3
 
 
 class particle:
     def __init__(self, index):
         self.index = index
-        self.pos = [0, uniform(-2,2)]
+        self.pos = [uniform(-1,1), uniform(-1,1)]
         self.prev = []
-        self.mass = 100
+        self.mass = constants.proton_mass
         self.velocity = [uniform(1, -1), uniform(-1, 1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
@@ -35,14 +35,15 @@ class particle:
         self.acceleration = self.F / self.mass
         #print(self.F)
     
-    def sum_energy(self, e_kin_tot):
-           e_kin_tot += 0.5* self.mass * np.sqrt(self.velocity[0]**2+self.velocity[1]**2)
-           print(np.sqrt(self.velocity[0]**2+self.velocity[1]**2))
+    def sum_energy(self):
+           return(0.5* self.mass * np.sqrt(self.velocity[0]**2+self.velocity[1]**2)) 
+           
+           
     
     def adj_vel(self, friction):
         self.velocity[0] *= friction
         self.velocity[1] *= friction
-        print(np.sqrt(self.velocity[0]**2+self.velocity[1]**2))
+        #print(np.sqrt(self.velocity[0]**2+self.velocity[1]**2))
     
     def propagate(self, dt):
         
@@ -74,14 +75,14 @@ class particle:
     
     
 
-               
+             
                
                
 
 
             
 particles = []
-for i in range(2):
+for i in range(10):
     particles.append(particle(i))
 #for j in particles:
     #j.calc_forces(particles)    
@@ -116,15 +117,16 @@ def update(i):
         
         lines[j].set_xdata([particles[j].pos[0]])
         lines[j].set_ydata([particles[j].pos[1]])        
-    print("before friction")
+    #print("before friction")
     for j in particles:
-        j.sum_energy(e_kin_tot)
+        e_kin_tot =+ j.sum_energy()
     
     friction = 1.0 - damping*np.clip((((e_kin_tot)/(len(particles)*constants.Boltzmann)-t0)/(t0)), -1, 1)**3
-    print("after friction")
+    #print("after friction")
+    print((e_kin_tot)/(len(particles)*constants.Boltzmann))
     for j in particles:
         j.adj_vel(friction)
-    print("-")
+    #print("-")
         
     
     
