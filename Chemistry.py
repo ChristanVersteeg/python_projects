@@ -10,15 +10,15 @@ ediss = 500*constants.proton_mass
 alpha = 1
 deq = 1
 t0 = 0.001
-damping = 0.1
+damping = 0.3
 
 class particle:
     def __init__(self, index):
         self.index = index
-        self.pos = [uniform(-1,1), uniform(-1,1)]
+        self.pos = [uniform(-0.5,0.5), uniform(-0.5,0.5)]
         self.prev = []
         self.mass = constants.proton_mass * 10
-        self.velocity = [uniform(1, -1), uniform(-1, 1)]
+        self.velocity = [uniform(-1, 1), uniform(-1, 1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
         self.F = [0,0]
@@ -46,20 +46,21 @@ class particle:
         self.velocity[1] += self.acceleration[1] * dt
         
         self.prev.append(deepcopy(self.pos))
+        
+        def limit_position(pos_index, velocity_index, limit_index_x, limit_index_y):
+            self.pos[pos_index] = self.limits[limit_index_x][limit_index_y] - (self.velocity[velocity_index]*dt-(self.limits[limit_index_x][limit_index_y]-self.pos[pos_index]))
+            self.velocity[velocity_index] *= -1
+        
         if ((self.velocity[0]*dt + self.pos[0]) > self.limits[0][0]):
-            self.pos[0] = self.limits[0][0] - (self.velocity[0]*dt-(self.limits[0][0]-self.pos[0]))
-            self.velocity[0] *= -1
+            limit_position(0, 0, 0, 0)
         elif ((self.velocity[0]*dt + self.pos[0]) < self.limits[0][1]):
-            self.pos[0] = self.limits[0][1] - (self.velocity[0]*dt-(self.limits[0][1]-self.pos[0]))
-            self.velocity[0] *= -1
+            limit_position(0, 0, 0, 1)
         else:
             self.pos[0] += self.velocity[0]*dt
         if ((self.velocity[1]*dt + self.pos[1]) > self.limits[1][0]):
-            self.pos[1] = self.limits[1][0] - (self.velocity[1]*dt-(self.limits[1][0]-self.pos[1]))
-            self.velocity[1] *= -1
+            limit_position(1, 1, 1, 0)
         elif ((self.velocity[1]*dt + self.pos[1]) < self.limits[1][1]):
-            self.pos[1] = self.limits[1][1] - (self.velocity[1]*dt-(self.limits[1][1]-self.pos[1]))
-            self.velocity[1] *= -1
+            limit_position(1, 1, 1, 1)
         else:
             self.pos[1] += self.velocity[1]*dt
         self.F = [0,0]
@@ -68,18 +69,10 @@ class particle:
 particles = []
 for i in range(2):
     particles.append(particle(i))
-#for j in particles:
-    #j.calc_forces(particles)    
 for j in particles:   
     for i in range(3):
         j.propagate(1)       
-"""
-for i in range(6):
-    for j in particles:
-        j.calc_forces(particles)    
-    for k in particles:
-        k.propagate(1)
-"""
+
 fig, axes = plt.subplots(1,1, figsize =(10,5))
 
 axes.set_xlim(-10, 10)
@@ -114,9 +107,5 @@ ani1 = animation.FuncAnimation(fig     = fig,
                               interval = 60,
                               repeat = True,
                               blit=True)
-'''
-for particle in particles:   
-    trajectory = np.array(particle.prev)
-    line, = axes.plot(trajectory[:,0], trajectory[:,1],'o')
-'''
+
 plt.show()
