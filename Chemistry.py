@@ -12,7 +12,6 @@ deq = 1
 t0 = 1e-5
 damping = 0.25
 
-
 class particle:
     def __init__(self, index):
         self.index = index
@@ -38,8 +37,6 @@ class particle:
     def sum_energy(self):
            return(0.5* self.mass * np.sqrt(self.velocity[0]**2+self.velocity[1]**2)) 
            
-           
-    
     def adj_vel(self, friction):
         self.velocity[0] *= friction
         self.velocity[1] *= friction
@@ -69,18 +66,7 @@ class particle:
             self.pos[1] += self.velocity[1]*dt
         self.F = [0,0]
         self.v_prev = self.velocity
-  
     
-
-    
-    
-
-             
-               
-               
-
-
-            
 particles = []
 for i in range(10):
     particles.append(particle(i))
@@ -106,9 +92,7 @@ lines = []
 for i in range(len(particles)):
     lines.append(axes.plot(particles[i].prev[0][0], particles[i].prev[0][1], 'o')[0])
 
-
 def update(i):
-    
     e_kin_tot = 0
     for j in range(len(particles)):
         particles[j].calc_forces(particles)
@@ -126,10 +110,7 @@ def update(i):
     print((e_kin_tot)/(len(particles)*constants.Boltzmann))
     for j in particles:
         j.adj_vel(friction)
-    #print("-")
         
-    
-    
     return lines
 
 ani1 = animation.FuncAnimation(fig     = fig,
