@@ -47,9 +47,9 @@ class particle:
         
         self.prev.append(deepcopy(self.pos))
         
-        def limit_position(pos_index, velocity_index, limit_index_x, limit_index_y):
-            self.pos[pos_index] = self.limits[limit_index_x][limit_index_y] - (self.velocity[velocity_index]*dt-(self.limits[limit_index_x][limit_index_y]-self.pos[pos_index]))
-            self.velocity[velocity_index] *= -1
+        def limit_position(pos_index, v_index, limit_1, limit_2):
+            self.pos[pos_index] = self.limits[limit_1][limit_2] - (self.velocity[v_index]*dt-(self.limits[limit_1][limit_2]-self.pos[pos_index]))
+            self.velocity[v_index] *= -1
         
         if ((self.velocity[0]*dt + self.pos[0]) > self.limits[0][0]):
             limit_position(0, 0, 0, 0)
