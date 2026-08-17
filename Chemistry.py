@@ -9,7 +9,7 @@ from scipy import constants
 ediss = 500*constants.proton_mass
 alpha = 1
 deq = 1
-t0 = 1e-4
+t0 = 0.001
 damping = 0.1
 
 class particle:
@@ -17,7 +17,7 @@ class particle:
         self.index = index
         self.pos = [uniform(-1,1), uniform(-1,1)]
         self.prev = []
-        self.mass = constants.proton_mass 
+        self.mass = constants.proton_mass * 10
         self.velocity = [uniform(1, -1), uniform(-1, 1)]
         self.v_prev = [0,0]
         self.acceleration = [0,0]
@@ -66,7 +66,7 @@ class particle:
         self.v_prev = self.velocity
     
 particles = []
-for i in range(50):
+for i in range(2):
     particles.append(particle(i))
 #for j in particles:
     #j.calc_forces(particles)    
