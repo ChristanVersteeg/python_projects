@@ -130,19 +130,22 @@ def excel_to_animated_slide(excel_filename="data.xlsx", output_pptx_name="excel_
     group_shape._element.nvGrpSpPr.cNvPr.set('id', '32')
     group_shape._element.nvGrpSpPr.cNvPr.set('name', 'Group 31')
 
-    # 6. Dynamically calculate scroll height ratio and split into 100 sequential parts (59s each)
+    # 6. Dynamically calculate cumulative scroll paths across 100 sequential parts (59s each)
     scroll_ratio = max(0.0, (total_table_height_inches - slide_height_inches) / slide_height_inches)
     num_steps = 100
     step_ratio = scroll_ratio / num_steps
     dur_per_step = 59000  # Max 59 seconds per segment
 
-    print(f"Total scroll ratio: {scroll_ratio:.4f} (Split into {num_steps} steps of {step_ratio:.4f})")
+    print(f"Total scroll ratio: {scroll_ratio:.4f} (Split into {num_steps} cumulative steps)")
 
-    # Generate the 100 click-triggered animation blocks dynamically
+    # Generate the 100 cumulatively linked click-triggered animation blocks
     anim_blocks_xml = ""
     for i in range(num_steps):
         node_id = 5 + (i * 2)
         bhvr_id = 6 + (i * 2)
+        
+        start_val = i * step_ratio
+        end_val = (i + 1) * step_ratio
         
         anim_blocks_xml += f"""
         <p:par>
@@ -151,7 +154,7 @@ def excel_to_animated_slide(excel_filename="data.xlsx", output_pptx_name="excel_
                     <p:cond delay="0"/>
                 </p:stCondLst>
                 <p:childTnLst>
-                    <p:animMotion origin="layout" path="M 0 0 L 0 -{step_ratio:.4f} E" pathEditMode="relative" ptsTypes="">
+                    <p:animMotion origin="layout" path="M 0 -{start_val:.4f} L 0 -{end_val:.4f} E" pathEditMode="relative" ptsTypes="">
                         <p:cBhvr>
                             <p:cTn id="{bhvr_id}" dur="{dur_per_step}" fill="hold"/>
                             <p:tgtEl>
@@ -220,7 +223,7 @@ def excel_to_animated_slide(excel_filename="data.xlsx", output_pptx_name="excel_
     if os.path.exists(temp_html):
         os.remove(temp_html)
 
-    print(f"Success! 100-step click-triggered slide saved to: {output_pptx_path}")
+    print(f"Success! Cumulative 100-step slide saved to: {output_pptx_path}")
 
 if __name__ == "__main__":
     excel_to_animated_slide("data.xlsx", "excel_animated_slide.pptx")
