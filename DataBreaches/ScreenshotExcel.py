@@ -5,8 +5,9 @@ from PIL import Image
 from playwright.sync_api import sync_playwright
 from pptx import Presentation
 from pptx.util import Inches
+from pptx.oxml import parse_xml
 
-def excel_to_grouped_single_slide(excel_filename="data.xlsx", output_pptx_name="excel_grouped_slide.pptx", sheet_name=0):
+def excel_to_animated_slide(excel_filename="data.xlsx", output_pptx_name="excel_animated_slide.pptx", sheet_name=0):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     excel_path = os.path.join(script_dir, excel_filename)
 
@@ -14,10 +15,11 @@ def excel_to_grouped_single_slide(excel_filename="data.xlsx", output_pptx_name="
         print(f"Error: Could not find '{excel_filename}' in {script_dir}")
         return
 
-    # 1. Read Excel and generate styled HTML
+    # 1. Read Excel file
     df = pd.read_excel(excel_path, sheet_name=sheet_name)
     html_content = df.to_html(index=False, classes='excel-table')
     
+    # CSS styled without sticky headers so it only appears once at the very top
     styled_html = f"""
     <html>
     <head>
@@ -25,12 +27,12 @@ def excel_to_grouped_single_slide(excel_filename="data.xlsx", output_pptx_name="
             body {{ 
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
                 margin: 0; 
-                padding: 20px;
+                padding: 0;
                 background-color: #ffffff;
             }}
             table.excel-table {{
                 border-collapse: collapse;
-                width: max-content;
+                width: 100%;
                 font-size: 13px;
                 color: #333333;
             }}
@@ -43,9 +45,6 @@ def excel_to_grouped_single_slide(excel_filename="data.xlsx", output_pptx_name="
             table.excel-table th {{
                 background-color: #f6f8fa;
                 font-weight: 600;
-                position: sticky;
-                top: 0;
-                z-index: 10;
             }}
             table.excel-table tr:nth-child(even) {{
                 background-color: #fcfcfc;
@@ -65,11 +64,11 @@ def excel_to_grouped_single_slide(excel_filename="data.xlsx", output_pptx_name="
     temp_chunk_prefix = os.path.join(script_dir, "temp_chunk_")
     chunk_files = []
 
-    # 2. Render and capture chunks safely using standard viewport shots
+    # 2. Render and capture chunks via Playwright
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        viewport_width = 1600
-        viewport_height = 2000  # Safe viewport chunk height
+        viewport_width = 1920
+        viewport_height = 2000
         
         page = browser.new_page(
             viewport={"width": viewport_width, "height": viewport_height},
@@ -88,45 +87,114 @@ def excel_to_grouped_single_slide(excel_filename="data.xlsx", output_pptx_name="
             page.wait_for_timeout(200)
             
             chunk_path = f"{temp_chunk_prefix}{i}.png"
-            # Take a standard viewport screenshot at this scroll location
             page.screenshot(path=chunk_path)
             chunk_files.append(chunk_path)
 
         browser.close()
 
-    # 3. Calculate total required slide height based on image proportions
-    target_slide_width_inches = 12.0
-    calculated_total_height_inches = 1.0  # Margins
-
+    # 3. Calculate exact proportions and total table height in inches
+    target_slide_width_inches = 13.333
+    slide_height_inches = 7.5
+    
     chunk_dimensions = []
+    total_table_height_inches = 0
     for cf in chunk_files:
         with Image.open(cf) as img:
             w, h = img.size
             img_height_inches = target_slide_width_inches * (h / w)
             chunk_dimensions.append((cf, img_height_inches))
-            calculated_total_height_inches += img_height_inches
+            total_table_height_inches += img_height_inches
 
-    # 4. Initialize PowerPoint presentation with a custom tall slide
+    # 4. Initialize presentation with standard widescreen layout
     prs = Presentation()
-    prs.slide_width = Inches(13.333)
-    prs.slide_height = Inches(min(56.0, max(7.5, calculated_total_height_inches)))
+    prs.slide_width = Inches(target_slide_width_inches)
+    prs.slide_height = Inches(slide_height_inches)
     
     slide = prs.slides.add_slide(prs.slide_layouts[6])
 
-    # 5. Import, position with math, and collect shapes for grouping
-    print("Importing, positioning, and grouping chunks on the slide...")
+    # 5. Import and position chunks edge-to-edge
+    print("Importing, positioning, and grouping chunks...")
     shape_objects = []
-    current_top = Inches(0.5)
-    left_pos = Inches(0.66)
+    current_top = Inches(0)
+    left_pos = Inches(0)
 
     for chunk_path, img_h in chunk_dimensions:
         pic = slide.shapes.add_picture(chunk_path, left_pos, current_top, width=Inches(target_slide_width_inches))
         shape_objects.append(pic)
         current_top += Inches(img_h)
 
-    # Group all picture shapes together into a single master object
-    if shape_objects:
-        slide.shapes.add_group_shape(shape_objects)
+    # Group all picture slices into a single master object
+    group_shape = slide.shapes.add_group_shape(shape_objects)
+    
+    # Enforce ID and name mapping required by the animation XML
+    group_shape._element.nvGrpSpPr.cNvPr.set('id', '32')
+    group_shape._element.nvGrpSpPr.cNvPr.set('name', 'Group 31')
+
+    # 6. Dynamically calculate scroll height ratio for the motion path
+    scroll_ratio = max(0.0, (total_table_height_inches - slide_height_inches) / slide_height_inches)
+    path_string = f"M 0 0 L 0 -{scroll_ratio:.4f} E"
+    print(f"Calculated scroll path ratio: {path_string}")
+
+    # 7. Inject the Animation XML with the dynamic path
+    timing_xml = f"""
+    <p:timing xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+        <p:tnLst>
+            <p:par>
+                <p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot">
+                    <p:childTnLst>
+                        <p:seq concurrent="1" nextAc="seek">
+                            <p:cTn id="2" dur="indefinite" nodeType="mainSeq">
+                                <p:childTnLst>
+                                    <p:par>
+                                        <p:cTn id="3" fill="hold">
+                                            <p:stCondLst>
+                                                <p:cond delay="indefinite"/>
+                                            </p:stCondLst>
+                                            <p:childTnLst>
+                                                <p:par>
+                                                    <p:cTn id="4" fill="hold">
+                                                        <p:stCondLst>
+                                                            <p:cond delay="0"/>
+                                                        </p:stCondLst>
+                                                        <p:childTnLst>
+                                                            <p:par>
+                                                                <p:cTn id="5" presetID="42" presetClass="path" presetSubtype="0" accel="50000" decel="50000" fill="hold" nodeType="clickEffect">
+                                                                    <p:stCondLst>
+                                                                        <p:cond delay="0"/>
+                                                                    </p:stCondLst>
+                                                                    <p:childTnLst>
+                                                                        <p:animMotion origin="layout" path="{path_string}" pathEditMode="relative" ptsTypes="">
+                                                                            <p:cBhvr>
+                                                                                <p:cTn id="6" dur="15000" fill="hold"/>
+                                                                                <p:tgtEl>
+                                                                                    <p:spTgt spid="32"/>
+                                                                                </p:tgtEl>
+                                                                                <p:attrNameLst>
+                                                                                    <p:attrName>ppt_x</p:attrName>
+                                                                                    <p:attrName>ppt_y</p:attrName>
+                                                                                </p:attrNameLst>
+                                                                            </p:cBhvr>
+                                                                        </p:animMotion>
+                                                                    </p:childTnLst>
+                                                                </p:cTn>
+                                                            </p:par>
+                                                        </p:childTnLst>
+                                                    </p:cTn>
+                                                </p:par>
+                                            </p:childTnLst>
+                                        </p:cTn>
+                                    </p:par>
+                                </p:childTnLst>
+                            </p:cTn>
+                        </p:seq>
+                    </p:childTnLst>
+                </p:cTn>
+            </p:par>
+        </p:tnLst>
+    </p:timing>
+    """
+    timing_element = parse_xml(timing_xml)
+    slide._element.append(timing_element)
 
     # Save presentation
     output_pptx_path = os.path.join(script_dir, output_pptx_name)
@@ -139,7 +207,7 @@ def excel_to_grouped_single_slide(excel_filename="data.xlsx", output_pptx_name="
     if os.path.exists(temp_html):
         os.remove(temp_html)
 
-    print(f"Success! Grouped single-slide presentation saved to: {output_pptx_path}")
+    print(f"Success! Clean single-header slide saved to: {output_pptx_path}")
 
 if __name__ == "__main__":
-    excel_to_grouped_single_slide("data.xlsx", "excel_grouped_slide.pptx")
+    excel_to_animated_slide("data.xlsx", "excel_animated_slide.pptx")
