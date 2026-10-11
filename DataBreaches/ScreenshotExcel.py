@@ -130,12 +130,45 @@ def excel_to_animated_slide(excel_filename="data.xlsx", output_pptx_name="excel_
     group_shape._element.nvGrpSpPr.cNvPr.set('id', '32')
     group_shape._element.nvGrpSpPr.cNvPr.set('name', 'Group 31')
 
-    # 6. Dynamically calculate scroll height ratio for the motion path
+    # 6. Dynamically calculate scroll height ratio and split into 100 sequential parts (59s each)
     scroll_ratio = max(0.0, (total_table_height_inches - slide_height_inches) / slide_height_inches)
-    path_string = f"M 0 0 L 0 -{scroll_ratio:.4f} E"
-    print(f"Calculated scroll path ratio: {path_string}")
+    num_steps = 100
+    step_ratio = scroll_ratio / num_steps
+    dur_per_step = 59000  # Max 59 seconds per segment
 
-    # 7. Inject the Animation XML with the dynamic path
+    print(f"Total scroll ratio: {scroll_ratio:.4f} (Split into {num_steps} steps of {step_ratio:.4f})")
+
+    # Generate the 100 click-triggered animation blocks dynamically
+    anim_blocks_xml = ""
+    for i in range(num_steps):
+        node_id = 5 + (i * 2)
+        bhvr_id = 6 + (i * 2)
+        
+        anim_blocks_xml += f"""
+        <p:par>
+            <p:cTn id="{node_id}" presetID="42" presetClass="path" presetSubtype="0" accel="0" decel="0" fill="hold" nodeType="clickEffect">
+                <p:stCondLst>
+                    <p:cond delay="0"/>
+                </p:stCondLst>
+                <p:childTnLst>
+                    <p:animMotion origin="layout" path="M 0 0 L 0 -{step_ratio:.4f} E" pathEditMode="relative" ptsTypes="">
+                        <p:cBhvr>
+                            <p:cTn id="{bhvr_id}" dur="{dur_per_step}" fill="hold"/>
+                            <p:tgtEl>
+                                <p:spTgt spid="32"/>
+                            </p:tgtEl>
+                            <p:attrNameLst>
+                                <p:attrName>ppt_x</p:attrName>
+                                <p:attrName>ppt_y</p:attrName>
+                            </p:attrNameLst>
+                        </p:cBhvr>
+                    </p:animMotion>
+                </p:childTnLst>
+            </p:cTn>
+        </p:par>
+        """
+
+    # 7. Inject the complete Animation XML structure with click-ready sequence configuration
     timing_xml = f"""
     <p:timing xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
         <p:tnLst>
@@ -157,27 +190,7 @@ def excel_to_animated_slide(excel_filename="data.xlsx", output_pptx_name="excel_
                                                             <p:cond delay="0"/>
                                                         </p:stCondLst>
                                                         <p:childTnLst>
-                                                            <p:par>
-                                                                <p:cTn id="5" presetID="42" presetClass="path" presetSubtype="0" accel="50000" decel="50000" fill="hold" nodeType="clickEffect">
-                                                                    <p:stCondLst>
-                                                                        <p:cond delay="0"/>
-                                                                    </p:stCondLst>
-                                                                    <p:childTnLst>
-                                                                        <p:animMotion origin="layout" path="{path_string}" pathEditMode="relative" ptsTypes="">
-                                                                            <p:cBhvr>
-                                                                                <p:cTn id="6" dur="15000" fill="hold"/>
-                                                                                <p:tgtEl>
-                                                                                    <p:spTgt spid="32"/>
-                                                                                </p:tgtEl>
-                                                                                <p:attrNameLst>
-                                                                                    <p:attrName>ppt_x</p:attrName>
-                                                                                    <p:attrName>ppt_y</p:attrName>
-                                                                                </p:attrNameLst>
-                                                                            </p:cBhvr>
-                                                                        </p:animMotion>
-                                                                    </p:childTnLst>
-                                                                </p:cTn>
-                                                            </p:par>
+                                                            {anim_blocks_xml}
                                                         </p:childTnLst>
                                                     </p:cTn>
                                                 </p:par>
@@ -207,7 +220,7 @@ def excel_to_animated_slide(excel_filename="data.xlsx", output_pptx_name="excel_
     if os.path.exists(temp_html):
         os.remove(temp_html)
 
-    print(f"Success! Clean single-header slide saved to: {output_pptx_path}")
+    print(f"Success! 100-step click-triggered slide saved to: {output_pptx_path}")
 
 if __name__ == "__main__":
     excel_to_animated_slide("data.xlsx", "excel_animated_slide.pptx")
