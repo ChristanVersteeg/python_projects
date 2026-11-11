@@ -8,25 +8,25 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # 🛠️ CONFIGURATION CONSTANTS
 # ============================
 
-# Name of the input image in the root folder (supports PNG, JPG, etc.)
-INPUT_IMAGE_NAME = "maria2.jpg"  # Change to your actual image file
+# Naam van de invoerafbeelding
+INPUT_IMAGE_NAME = "tri.jpg"  # Pas aan naar de juiste extensie (.jpg of .png)
 
-# Name of the output image with background removed
+# Naam van het resultaat
 OUTPUT_IMAGE_NAME = "output_image.png"
 
-# Aggressiveness of background removal (True = more aggressive, can eat into fine edges)
-CUT_BOUNDARY_TIGHT = True
+# Minder agressief afsnijden zodat gelaatstrekken en randen behouden blijven
+CUT_BOUNDARY_TIGHT = False
 
-# Enable alpha matting for better edges (e.g. hair)
+# Alpha matting inschakelen voor een nauwkeurige uitsnede van haren en randen
 USE_ALPHA_MATTING = True
 
-# Controls how far the matting algorithm will look around the object (higher = more background included)
-ALPHA_MATTING_FOREGROUND_THRESHOLD = 5
+# Verlaag deze waarde zodat de achtergrond niet in de randen van je hoofd/kleding snijdt
+ALPHA_MATTING_FOREGROUND_THRESHOLD = 240
 
-# Minimum size of object to keep during matting (lower = keeps smaller features)
-ALPHA_MATTING_ERODE_SIZE = 120
+# Verlaag het wegsnijden aan de randen om details (zoals je bril en kapsel) te beschermen
+ALPHA_MATTING_ERODE_SIZE = 10
 
-# Background blur (optional, for soft transitions). 0 = no blur
+# Geen achtergrondvervaging om de uitsnede zo strak mogelijk te houden
 POST_PROCESS_BLUR_RADIUS = 0
 
 # ==================================
